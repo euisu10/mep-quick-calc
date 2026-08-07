@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MEP QUICK CALC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E2238;
+    --bg-deep: #0A1B2E;
+    --panel: #142E4A;
+    --panel-2: #17324F;
+    --line: rgba(148, 197, 230, 0.16);
+    --line-strong: rgba(148, 197, 230, 0.35);
+    --ink: #E8F1F8;
+    --muted: #86A2BE;
+    --cyan: #55D6E8;
+    --amber: #FFB454;
+    --red: #FF7A7A;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans KR', sans-serif;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      repeating-linear-gradient(0deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 32px),
+      repeating-linear-gradient(90deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 32px),
+      linear-gradient(160deg, var(--bg) 0%, var(--bg-deep) 100%);
+    color: var(--ink);
+    font-family: var(--sans);
+    min-height: 100vh;
+    padding: 28px 16px 60px;
+  }
+  .wrap{ max-width: 760px; margin: 0 auto; }
+
+  /* Header / title block, drafting-style */
+  header{
+    border: 1px solid var(--line-strong);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    padding: 18px 20px;
+    position: relative;
+    margin-bottom: 22px;
+  }
+  header::before, header::after,
+  .panel::before, .panel::after{
+    content:"";
+    position:absolute;
+    width:14px; height:14px;
+    border-color: var(--cyan);
+    opacity: 0.7;
+  }
+  header::before{ top:-1px; left:-1px; border-top:2px solid var(--cyan); border-left:2px solid var(--cyan); }
+  header::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--cyan); border-right:2px solid var(--cyan); }
+
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  h1{
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .sub{
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  /* Tabs styled like a drawing index */
+  .tabs{
+    display: flex;
+    gap: 2px;
+    margin-bottom: 18px;
+    border: 1px solid var(--line-strong);
+    padding: 4px;
+    background: rgba(0,0,0,0.15);
+  }
+  .tab-btn{
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    padding: 11px 8px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .tab-btn .num{ color: var(--amber); margin-right: 6px; }
+  .tab-btn.active{
+    background: var(--panel-2);
+    color: var(--ink);
+  }
+  .tab-btn:hover:not(.active){ color: var(--ink); }
+
+  .panel{
+    position: relative;
+    border: 1px solid var(--line-strong);
+    background: var(--panel);
+    padding: 22px;
+    display: none;
+  }
+  .panel.active{ display: block; }
+  .panel::before{ top:-1px; left:-1px; border-top:2px solid var(--line-strong); border-left:2px solid var(--line-strong); }
+  .panel::after{ bottom:-1px; right:-1px; border-bottom:2px solid var(--line-strong); border-right:2px solid var(--line-strong); }
+
+  .panel h2{
+    font-size: 15px;
+    margin: 0 0 4px;
+    font-weight: 600;
+  }
+  .panel .formula{
+    font-family: var(--mono);
+    color: var(--cyan);
+    font-size: 13px;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--line-strong);
+  }
+
+  /* Segmented target selector */
+  .seg-label{ font-size: 12px; color: var(--muted); margin-bottom: 8px; font-family: var(--mono); letter-spacing: 0.04em; }
+  .seg{
+    display: flex;
+    border: 1px solid var(--line-strong);
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .seg button{
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-right: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px;
+    cursor: pointer;
+  }
+  .seg button:last-child{ border-right: none; }
+  .seg button.active{ background: var(--amber); color: #1a1206; font-weight: 700; }
+
+  .field-group{
+    border: 1px solid var(--line);
+    padding: 14px 16px;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,0.015);
+  }
+  .field-group.is-target{
+    border-color: var(--amber);
+    background: rgba(255,180,84,0.06);
+  }
+  .field-group-title{
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .field-group.is-target .field-group-title{ color: var(--amber); }
+  .target-tag{ color: var(--amber); font-weight: 700; }
+
+  .row{ display:flex; gap:10px; flex-wrap: wrap; align-items: flex-end; }
+  .field{ flex: 1; min-width: 120px; }
+  .field label{
+    display:block;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    font-family: var(--mono);
+  }
+  input[type="number"], select{
+    width: 100%;
+    background: var(--bg-deep);
+    border: 1px solid var(--line-strong);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 9px 10px;
+    outline: none;
+  }
+  input[type="number"]:focus, select:focus{ border-color: var(--cyan); }
+  select{ cursor: pointer; }
+
+  .shape-toggle{ display:flex; gap: 8px; margin-bottom: 10px; }
+  .shape-toggle button{
+    background: var(--bg-deep);
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .shape-toggle button.active{ border-color: var(--cyan); color: var(--cyan); }
+
+  .placeholder-note{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    font-style: normal;
+  }
+
+  .calc-btn{
+    width: 100%;
+    background: var(--cyan);
+    color: #082733;
+    border: none;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    padding: 13px;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: filter .15s;
+  }
+  .calc-btn:hover{ filter: brightness(1.1); }
+
+  .result{
+    margin-top: 18px;
+    border: 1px solid var(--amber);
+    background: rgba(255,180,84,0.07);
+    padding: 16px;
+    display: none;
+  }
+  .result.show{ display: block; }
+  .result.error{ border-color: var(--red); background: rgba(255,122,122,0.08); }
+  .result-label{ font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 6px; }
+  .result-value{ font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--amber); }
+  .result.error .result-value{ color: var(--red); font-size: 15px; font-weight: 500; }
+  .result-sub{ font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.6; }
+
+  .back-convert{
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed rgba(255,180,84,0.3);
+  }
+  .back-convert .field-group-title{ color: var(--amber); }
+
+  footer{
+    text-align: center;
+    margin-top: 26px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">MEP FIELD TOOLS · REV.01</div>
+    <h1>실무 계산기</h1>
+    <div class="sub">풍량·풍속·면적 / 수치 비교 / 선형보간 — 현장·설계 검토용</div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="t1"><span class="num">01</span>풍량·풍속·면적</button>
+    <button class="tab-btn" data-tab="t2"><span class="num">02</span>수치 비교</button>
+    <button class="tab-btn" data-tab="t3"><span class="num">03</span>선형보간</button>
+  </div>
+
+  <!-- ===================== TAB 1 : Q V A ===================== -->
+  <section class="panel active" id="t1">
+    <h2>풍량 · 풍속 · 면적</h2>
+    <div class="formula">Q = A × V &nbsp; (Q: 풍량, A: 면적 m², V: 풍속 m/s)</div>
+
+    <div class="seg-label">구하고자 하는 값</div>
+    <div class="seg">
+      <button class="seg-t1 active" data-target="Q">Q (풍량)</button>
+      <button class="seg-t1" data-target="V">V (풍속)</button>
+      <button class="seg-t1" data-target="A">A (면적)</button>
+    </div>
+
+    <!-- Q group -->
+    <div class="field-group" id="grp-Q">
+      <div class="field-group-title"><span>Q &nbsp;풍량</span><span class="tag-Q"></span></div>
+      <div class="row" id="grp-Q-input">
+        <div class="field">
+          <label>단위</label>
+          <select id="qUnit">
+            <option value="CMM">CMM (m³/min)</option>
+            <option value="CMH">CMH (m³/hr)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>값</label>
+          <input type="number" id="qValue" placeholder="예: 600">
+        </div>
+      </div>
+    </div>
+
+    <!-- V group -->
+    <div class="field-group" id="grp-V">
+      <div class="field-group-title"><span>V &nbsp;풍속</span><span class="tag-V"></span></div>
+      <div class="row" id="grp-V-input">
+        <div class="field">
+          <label>값 (m/s)</label>
+          <input type="number" id="vValue" placeholder="예: 3.5">
+        </div>
+      </div>
+    </div>
+
+    <!-- A group -->
+    <div class="field-group" id="grp-A">
+      <div class="field-group-title"><span>A &nbsp;면적</span><span class="tag-A"></span></div>
+      <div id="grp-A-input">
+        <div class="shape-toggle">
+          <button class="shape-btn active" data-shape="rect">사각형</button>
+          <button class="shape-btn" data-shape="circle">원형</button>
+        </div>
+        <div class="row" id="shape-rect-fields">
+          <div class="field">
+            <label>가로 (mm)</label>
+            <input type="number" id="aWidth" placeholder="예: 600">
+          </div>
+          <div class="field">
+            <label>세로 (mm)</label>
+            <input type="number" id="aHeight" placeholder="예: 400">
+          </div>
+        </div>
+        <div class="row" id="shape-circle-fields" style="display:none;">
+          <div class="field">
+            <label>지름 (mm)</label>
+            <input type="number" id="aDiameter" placeholder="예: 150">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcQVA()">계산하기</button>
+    <div class="result" id="result1"></div>
+  </section>
+
+  <!-- ===================== TAB 2 : 비교 ===================== -->
+  <section class="panel" id="t2">
+    <h2>수치 비교 (증감률)</h2>
+    <div class="formula">차이율(%) = (B − A) ÷ A × 100</div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span>입력값</span></div>
+      <div class="row">
+        <div class="field">
+          <label>A (기준값)</label>
+          <input type="number" id="cmpA" placeholder="예: 100">
+        </div>
+        <div class="field">
+          <label>B (비교값)</label>
+          <input type="number" id="cmpB" placeholder="예: 120">
+        </div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcCompare()">계산하기</button>
+    <div class="result" id="result2"></div>
+  </section>
+
+  <!-- ===================== TAB 3 : 선형보간 ===================== -->
+  <section class="panel" id="t3">
+    <h2>선형보간</h2>
+    <div class="formula">Y = B + (X − A) × (D − B) ÷ (C − A)</div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span>기준점 1</span></div>
+      <div class="row">
+        <div class="field"><label>A</label><input type="number" id="liA" placeholder="예: 100"></div>
+        <div class="field"><label>B</label><input type="number" id="liB" placeholder="예: 100"></div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span>기준점 2</span></div>
+      <div class="row">
+        <div class="field"><label>C</label><input type="number" id="liC" placeholder="예: 300"></div>
+        <div class="field"><label>D</label><input type="number" id="liD" placeholder="예: 500"></div>
+      </div>
+    </div>
+
+    <div class="field-group is-target">
+      <div class="field-group-title"><span>구하고자 하는 지점</span></div>
+      <div class="row">
+        <div class="field"><label>X</label><input type="number" id="liX" placeholder="예: 200"></div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcInterp()">계산하기</button>
+    <div class="result" id="result3"></div>
+  </section>
+
+  <footer>MEP QUICK CALC — 사내 실무 검토용 계산 도구</footer>
+</div>
+
+<script>
+/* ---------- Tab switching ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------- TAB 1 logic ---------- */
+let target1 = 'Q';
+let shape = 'rect';
+
+document.querySelectorAll('.seg-t1').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.seg-t1').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    target1 = btn.dataset.target;
+    updateTargetUI();
+  });
+});
+
+document.querySelectorAll('.shape-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.shape-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    shape = btn.dataset.shape;
+    document.getElementById('shape-rect-fields').style.display = (shape==='rect') ? 'flex' : 'none';
+    document.getElementById('shape-circle-fields').style.display = (shape==='circle') ? 'flex' : 'none';
+  });
+});
+
+function updateTargetUI(){
+  ['Q','V','A'].forEach(key=>{
+    const grp = document.getElementById('grp-'+key);
+    const tag = document.querySelector('.tag-'+key);
+    if(key === target1){
+      grp.classList.add('is-target');
+      tag.innerHTML = '<span class="target-tag">← 계산 결과</span>';
+      grp.querySelectorAll('input, select').forEach(el=>el.disabled = true);
+    } else {
+      grp.classList.remove('is-target');
+      tag.innerHTML = '';
+      grp.querySelectorAll('input, select').forEach(el=>el.disabled = false);
+    }
+  });
+  document.getElementById('result1').classList.remove('show');
+}
+updateTargetUI();
+
+function areaFromInputs(){
+  // returns area in m^2, and a label string
+  if(shape === 'rect'){
+    const w = parseFloat(document.getElementById('aWidth').value);
+    const h = parseFloat(document.getElementById('aHeight').value);
+    if(isNaN(w) || isNaN(h)) return null;
+    return (w/1000) * (h/1000);
+  } else {
+    const d = parseFloat(document.getElementById('aDiameter').value);
+    if(isNaN(d)) return null;
+    return (Math.PI * d * d / 4) / 1000000;
+  }
+}
+
+function qToCMS(value, unit){
+  if(unit === 'CMM') return value/60;
+  return value/3600; // CMH
+}
+
+function calcQVA(){
+  const resEl = document.getElementById('result1');
+  resEl.classList.remove('error');
+
+  if(target1 === 'Q'){
+    const v = parseFloat(document.getElementById('vValue').value);
+    const a = areaFromInputs();
+    if(a === null || isNaN(v)){
+      showResult1('입력값을 확인해 주세요 (V, A).', true); return;
+    }
+    const qcms = a * v;
+    const cmm = qcms*60, cmh = qcms*3600;
+    showResult1(`Q = ${cmm.toFixed(2)} CMM &nbsp;/&nbsp; ${cmh.toFixed(1)} CMH`,
+      false, `A = ${a.toFixed(6)} m² · V = ${v} m/s 로 계산`);
+  }
+
+  else if(target1 === 'V'){
+    const qUnit = document.getElementById('qUnit').value;
+    const qVal = parseFloat(document.getElementById('qValue').value);
+    const a = areaFromInputs();
+    if(a === null || isNaN(qVal) || a === 0){
+      showResult1('입력값을 확인해 주세요 (Q, A). A는 0이 될 수 없습니다.', true); return;
+    }
+    const qcms = qToCMS(qVal, qUnit);
+    const v = qcms / a;
+    showResult1(`V = ${v.toFixed(3)} m/s`,
+      false, `Q = ${qVal} ${qUnit} · A = ${a.toFixed(6)} m² 로 계산`);
+  }
+
+  else if(target1 === 'A'){
+    const qUnit = document.getElementById('qUnit').value;
+    const qVal = parseFloat(document.getElementById('qValue').value);
+    const v = parseFloat(document.getElementById('vValue').value);
+    if(isNaN(qVal) || isNaN(v) || v === 0){
+      showResult1('입력값을 확인해 주세요 (Q, V). V는 0이 될 수 없습니다.', true); return;
+    }
+    const qcms = qToCMS(qVal, qUnit);
+    const a = qcms / v;
+    const diameter = Math.sqrt(4*a/Math.PI) * 1000;
+    showResult1(`A = ${a.toFixed(6)} m² &nbsp;(${(a*1000000).toFixed(1)} mm²)`,
+      false,
+      `Q = ${qVal} ${qUnit} · V = ${v} m/s 로 계산<br>` +
+      `원형 환산 시 지름 ≈ ${diameter.toFixed(1)} mm<br>` +
+      `사각형 환산: 한 변을 알면 아래에서 나머지 변을 확인하세요.` +
+      `<div class="back-convert"><div class="row">` +
+      `<div class="field"><label>한 변 (mm)</label><input type="number" id="backSide" oninput="backConvert(${a})" placeholder="예: 600"></div>` +
+      `<div class="field"><label>나머지 변 (mm)</label><input type="number" id="backSideResult" disabled></div>` +
+      `</div></div>`
+    );
+  }
+}
+
+function backConvert(areaM2){
+  const side = parseFloat(document.getElementById('backSide').value);
+  const out = document.getElementById('backSideResult');
+  if(isNaN(side) || side === 0){ out.value=''; return; }
+  const other = (areaM2*1000000)/side;
+  out.value = other.toFixed(1);
+}
+
+function showResult1(mainHtml, isError, subHtml){
+  const el = document.getElementById('result1');
+  el.classList.toggle('error', !!isError);
+  el.classList.add('show');
+  el.innerHTML = `<div class="result-label">${isError? 'ERROR' : 'RESULT'}</div>` +
+    `<div class="result-value">${mainHtml}</div>` +
+    (subHtml ? `<div class="result-sub">${subHtml}</div>` : '');
+}
+
+/* ---------- TAB 2 logic ---------- */
+function calcCompare(){
+  const a = parseFloat(document.getElementById('cmpA').value);
+  const b = parseFloat(document.getElementById('cmpB').value);
+  const el = document.getElementById('result2');
+
+  if(isNaN(a) || isNaN(b)){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A, B 값을 입력해 주세요.</div>`;
+    return;
+  }
+  if(a === 0){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">기준값(A)이 0이면 계산할 수 없습니다.</div>`;
+    return;
+  }
+  el.classList.remove('error');
+  const diff = b - a;
+  const pct = (diff/a)*100;
+  const absDiff = Math.abs(diff).toFixed(1);
+  const pctAbs = Math.abs(pct).toFixed(1);
+  let msg;
+  if(diff > 0) msg = `B는 A 대비 <span style="color:var(--amber)">${pctAbs}% 높음</span>`;
+  else if(diff < 0) msg = `B는 A 대비 <span style="color:var(--amber)">${pctAbs}% 낮음</span>`;
+  else msg = `A와 B가 동일합니다`;
+
+  el.classList.add('show');
+  el.innerHTML = `<div class="result-label">RESULT</div>` +
+    `<div class="result-value">${diff>=0?'+':'−'}${absDiff}</div>` +
+    `<div class="result-sub">${msg}<br>절대값 차이 = ${absDiff} · 차이율 = ${diff>=0?'+':'−'}${pctAbs}%</div>`;
+}
+
+/* ---------- TAB 3 logic ---------- */
+function calcInterp(){
+  const A = parseFloat(document.getElementById('liA').value);
+  const B = parseFloat(document.getElementById('liB').value);
+  const C = parseFloat(document.getElementById('liC').value);
+  const D = parseFloat(document.getElementById('liD').value);
+  const X = parseFloat(document.getElementById('liX').value);
+  const el = document.getElementById('result3');
+
+  if([A,B,C,D,X].some(v=>isNaN(v))){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A, B, C, D, X 값을 모두 입력해 주세요.</div>`;
+    return;
+  }
+  if(C - A === 0){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A값과 C값이 같으면 계산할 수 없습니다.</div>`;
+    return;
+  }
+  el.classList.remove('error');
+  const Y = B + (X - A) * (D - B) / (C - A);
+  el.classList.add('show');
+  el.innerHTML = `<div class="result-label">RESULT</div>` +
+    `<div class="result-value">Y = ${Y.toFixed(3)}</div>` +
+    `<div class="result-sub">(A=${A}, B=${B}) ↔ (C=${C}, D=${D}) 구간에서 X=${X} 지점 선형보간</div>`;
+}
+</script>
+</body>
+</html>
