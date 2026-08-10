@@ -9,17 +9,18 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0E2238;
-    --bg-deep: #0A1B2E;
-    --panel: #142E4A;
-    --panel-2: #17324F;
-    --line: rgba(148, 197, 230, 0.16);
-    --line-strong: rgba(148, 197, 230, 0.35);
-    --ink: #E8F1F8;
-    --muted: #86A2BE;
-    --cyan: #55D6E8;
-    --amber: #FFB454;
-    --red: #FF7A7A;
+    --bg: #1A3654;
+    --bg-deep: #142C46;
+    --panel: #1F3E5C;
+    --panel-2: #234868;
+    --line: rgba(148, 197, 230, 0.18);
+    --line-strong: rgba(148, 197, 230, 0.36);
+    --ink: #EDF4FA;
+    --muted: #93B0C9;
+    --cyan: #35C0EE;
+    --amber: #FF8A57;
+    --green: #97CE4C;
+    --red: #FF8686;
     --mono: 'IBM Plex Mono', monospace;
     --sans: 'IBM Plex Sans KR', sans-serif;
   }
@@ -40,10 +41,33 @@
   /* Header / title block, drafting-style */
   header{
     border: 1px solid var(--line-strong);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    background: linear-gradient(180deg, rgba(255,255,255,0.035), transparent);
     padding: 18px 20px;
     position: relative;
     margin-bottom: 22px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .header-text{ flex: 1; min-width: 0; }
+  .logo-badge{
+    flex-shrink: 0;
+    background: #FFFFFF;
+    border-radius: 4px;
+    padding: 7px 10px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 0 0 1px rgba(148,197,230,0.3), 0 4px 14px rgba(0,0,0,0.3);
+  }
+  .logo-badge img{
+    display: block;
+    height: 26px;
+    width: auto;
+  }
+  @media (max-width: 480px){
+    .logo-badge{ padding: 5px 8px; }
+    .logo-badge img{ height: 20px; }
   }
   header::before, header::after,
   .panel::before, .panel::after{
@@ -156,11 +180,11 @@
     border: 1px solid var(--line);
     padding: 14px 16px;
     margin-bottom: 14px;
-    background: rgba(255,255,255,0.015);
+    background: rgba(255,255,255,0.02);
   }
   .field-group.is-target{
     border-color: var(--amber);
-    background: rgba(255,180,84,0.06);
+    background: rgba(255,138,87,0.08);
   }
   .field-group-title{
     font-family: var(--mono);
@@ -217,8 +241,8 @@
 
   .calc-btn{
     width: 100%;
-    background: var(--cyan);
-    color: #082733;
+    background: var(--green);
+    color: #16330A;
     border: none;
     font-family: var(--mono);
     font-weight: 700;
@@ -234,12 +258,12 @@
   .result{
     margin-top: 18px;
     border: 1px solid var(--amber);
-    background: rgba(255,180,84,0.07);
+    background: rgba(255,138,87,0.09);
     padding: 16px;
     display: none;
   }
   .result.show{ display: block; }
-  .result.error{ border-color: var(--red); background: rgba(255,122,122,0.08); }
+  .result.error{ border-color: var(--red); background: rgba(255,134,134,0.1); }
   .result-label{ font-family: var(--mono); font-size: 11px; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 6px; }
   .result-value{ font-family: var(--mono); font-size: 24px; font-weight: 700; color: var(--amber); }
   .result.error .result-value{ color: var(--red); font-size: 15px; font-weight: 500; }
@@ -248,7 +272,7 @@
   .back-convert{
     margin-top: 14px;
     padding-top: 14px;
-    border-top: 1px dashed rgba(255,180,84,0.3);
+    border-top: 1px dashed rgba(255,138,87,0.35);
   }
   .back-convert .field-group-title{ color: var(--amber); }
 
@@ -260,21 +284,94 @@
     color: var(--muted);
     letter-spacing: 0.05em;
   }
+
+  /* Reference info panel (text-only, styled differently from source photo) */
+  .ref-panel{
+    border: 1px solid var(--line);
+    background: rgba(148,197,230,0.05);
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .ref-panel-title{
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--cyan);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .ref-cols{ display:flex; gap: 18px; flex-wrap: wrap; }
+  .ref-col{ flex: 1; min-width: 220px; }
+  .ref-col-h{
+    color: var(--amber);
+    font-size: 11.5px;
+    margin-bottom: 6px;
+    border-bottom: 1px dashed var(--line-strong);
+    padding-bottom: 5px;
+  }
+  .ref-row{
+    display:flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 3px 0;
+    color: var(--muted);
+  }
+  .ref-row .k{ color: var(--ink); }
+  .ref-note{
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--line-strong);
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  /* Method selector (volume calc) */
+  .method-toggle{ display:flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .method-toggle button{
+    flex: 1;
+    min-width: 140px;
+    background: var(--bg-deep);
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 9px 8px;
+    cursor: pointer;
+  }
+  .method-toggle button.active{ border-color: var(--green); color: var(--green); }
+
+  .vol-display{
+    border: 1px solid var(--amber);
+    background: rgba(255,138,87,0.08);
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--amber);
+  }
+  .vol-display .lbl{ color: var(--muted); font-size: 11px; margin-right: 8px; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header>
-    <div class="eyebrow">MEP FIELD TOOLS · REV.01</div>
-    <h1>실무 계산기</h1>
-    <div class="sub">풍량·풍속·면적 / 수치 비교 / 선형보간 — 현장·설계 검토용</div>
+    <div class="header-text">
+      <div class="eyebrow">MEP FIELD TOOLS · REV.02</div>
+      <h1>실무 계산기</h1>
+      <div class="sub">풍량·풍속·면적 / 필터 수량 산출 / 선형보간 / 수치 비교 / 교차곱 계산</div>
+    </div>
+    <div class="logo-badge"><img src="data:image/jpeg;base64,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" alt="SHINSUNG E&amp;G"></div>
   </header>
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="t1"><span class="num">01</span>풍량·풍속·면적</button>
-    <button class="tab-btn" data-tab="t2"><span class="num">02</span>수치 비교</button>
+    <button class="tab-btn" data-tab="t5"><span class="num">02</span>필터 수량 산출</button>
     <button class="tab-btn" data-tab="t3"><span class="num">03</span>선형보간</button>
+    <button class="tab-btn" data-tab="t2"><span class="num">04</span>수치 비교</button>
+    <button class="tab-btn" data-tab="t4"><span class="num">05</span>교차곱 계산</button>
   </div>
 
   <!-- ===================== TAB 1 : Q V A ===================== -->
@@ -404,6 +501,122 @@
     <div class="result" id="result3"></div>
   </section>
 
+  <!-- ===================== TAB 4 : 교차곱 계산 ===================== -->
+  <section class="panel" id="t4">
+    <h2>교차곱 계산 (비례식)</h2>
+    <div class="formula">A : B = C : D &nbsp;(A × D = B × C) &nbsp; (A,B,C,D 중 3개 값으로 나머지 1개 계산)</div>
+
+    <div class="seg-label">구하고자 하는 값</div>
+    <div class="seg">
+      <button class="seg-t4 active" data-target="A">A</button>
+      <button class="seg-t4" data-target="B">B</button>
+      <button class="seg-t4" data-target="C">C</button>
+      <button class="seg-t4" data-target="D">D</button>
+    </div>
+
+    <div class="field-group" id="grp4-A">
+      <div class="field-group-title"><span>A</span><span class="tag4-A"></span></div>
+      <div class="row"><div class="field"><input type="number" id="crA" placeholder="예: 100"></div></div>
+    </div>
+    <div class="field-group" id="grp4-B">
+      <div class="field-group-title"><span>B</span><span class="tag4-B"></span></div>
+      <div class="row"><div class="field"><input type="number" id="crB" placeholder="예: 4"></div></div>
+    </div>
+    <div class="field-group" id="grp4-C">
+      <div class="field-group-title"><span>C</span><span class="tag4-C"></span></div>
+      <div class="row"><div class="field"><input type="number" id="crC" placeholder="예: 200"></div></div>
+    </div>
+    <div class="field-group" id="grp4-D">
+      <div class="field-group-title"><span>D</span><span class="tag4-D"></span></div>
+      <div class="row"><div class="field"><input type="number" id="crD" placeholder="예: 8"></div></div>
+    </div>
+
+    <button class="calc-btn" onclick="calcCross()">계산하기</button>
+    <div class="result" id="result4"></div>
+  </section>
+
+  <!-- ===================== TAB 5 : 필터(BFU/FFU) 수량 산출 ===================== -->
+  <section class="panel" id="t5">
+    <h2>필터(BFU · FFU) 수량 산출</h2>
+    <div class="formula">필요풍량(CMH) = 룸 체적(m³) × 환기횟수(회/hr) &nbsp;→&nbsp; 필터 대수 = 필요풍량 ÷ 필터 1대당 풍량</div>
+
+    <div class="ref-panel">
+      <div class="ref-panel-title">참조 : CLASS별 환기횟수 기준</div>
+      <div class="ref-cols">
+        <div class="ref-col">
+          <div class="ref-col-h">클린 환기 (CLASS 기준)</div>
+          <div class="ref-row"><span class="k">CLASS 100,000</span><span>20~30회</span></div>
+          <div class="ref-row"><span class="k">CLASS 10,000</span><span>30~40회</span></div>
+          <div class="ref-row"><span class="k">CLASS 1,000</span><span>50~70회</span></div>
+          <div class="ref-row"><span class="k">CLASS 100</span><span>200~600회</span></div>
+          <div class="ref-row"><span class="k">CLASS 10</span><span>FFU 꽉 채움(500회 이상)</span></div>
+        </div>
+        <div class="ref-col">
+          <div class="ref-col-h">공조 환기 (온도편차 기준)</div>
+          <div class="ref-row"><span class="k">±1℃</span><span>20회 이상</span></div>
+          <div class="ref-row"><span class="k">±2℃</span><span>15회</span></div>
+          <div class="ref-row"><span class="k">±3℃</span><span>10회</span></div>
+        </div>
+      </div>
+      <div class="ref-note">Class 1~100은 필터 면풍속 0.25~0.45 m/s 기준으로 별도 검토. 위 수치는 참고용이며, 실제 값은 프로젝트 기준에 맞춰 아래 입력란에 직접 입력하세요.</div>
+    </div>
+
+    <div class="seg-label">룸 체적 입력 방식</div>
+    <div class="method-toggle">
+      <button class="vol-method active" data-method="wh">가로·세로 + 천정고</button>
+      <button class="vol-method" data-method="ah">면적(m²) + 천정고</button>
+      <button class="vol-method" data-method="v">체적(m³) 직접입력</button>
+    </div>
+
+    <div class="field-group" id="vol-wh-fields">
+      <div class="field-group-title"><span>가로 · 세로 · 천정고</span></div>
+      <div class="row">
+        <div class="field"><label>가로 (m)</label><input type="number" id="rmWidth" placeholder="예: 10"></div>
+        <div class="field"><label>세로 (m)</label><input type="number" id="rmLength" placeholder="예: 8"></div>
+        <div class="field"><label>천정고 (m)</label><input type="number" id="rmHeightWH" placeholder="예: 3"></div>
+      </div>
+    </div>
+
+    <div class="field-group" id="vol-ah-fields" style="display:none;">
+      <div class="field-group-title"><span>면적 · 천정고</span></div>
+      <div class="row">
+        <div class="field"><label>면적 (m²)</label><input type="number" id="rmArea" placeholder="예: 80"></div>
+        <div class="field"><label>천정고 (m)</label><input type="number" id="rmHeightAH" placeholder="예: 3"></div>
+      </div>
+    </div>
+
+    <div class="field-group" id="vol-v-fields" style="display:none;">
+      <div class="field-group-title"><span>체적 직접입력</span></div>
+      <div class="row">
+        <div class="field"><label>체적 (m³)</label><input type="number" id="rmVolume" placeholder="예: 240"></div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span>환기횟수</span></div>
+      <div class="row">
+        <div class="field"><label>ACH (회/hr)</label><input type="number" id="ach" placeholder="예: 30"></div>
+      </div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title"><span>필터 1대당 풍량</span></div>
+      <div class="row">
+        <div class="field">
+          <label>단위</label>
+          <select id="filterUnit">
+            <option value="CMM">CMM (m³/min)</option>
+            <option value="CMH">CMH (m³/hr)</option>
+          </select>
+        </div>
+        <div class="field"><label>값</label><input type="number" id="filterFlow" placeholder="예: 30"></div>
+      </div>
+    </div>
+
+    <button class="calc-btn" onclick="calcFilterQty()">계산하기</button>
+    <div class="result" id="result5"></div>
+  </section>
+
   <footer>MEP QUICK CALC — 사내 실무 검토용 계산 도구</footer>
 </div>
 
@@ -447,7 +660,7 @@ function updateTargetUI(){
     const tag = document.querySelector('.tag-'+key);
     if(key === target1){
       grp.classList.add('is-target');
-      tag.innerHTML = '<span class="target-tag">← 계산 결과</span>';
+      tag.innerHTML = '';
       grp.querySelectorAll('input, select').forEach(el=>el.disabled = true);
     } else {
       grp.classList.remove('is-target');
@@ -604,6 +817,155 @@ function calcInterp(){
   el.innerHTML = `<div class="result-label">RESULT</div>` +
     `<div class="result-value">Y = ${Y.toFixed(3)}</div>` +
     `<div class="result-sub">(A=${A}, B=${B}) ↔ (C=${C}, D=${D}) 구간에서 X=${X} 지점 선형보간</div>`;
+}
+
+/* ---------- TAB 4 logic (교차곱) ---------- */
+let target4 = 'A';
+const crIds = { A:'crA', B:'crB', C:'crC', D:'crD' };
+
+document.querySelectorAll('.seg-t4').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.seg-t4').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    target4 = btn.dataset.target;
+    updateTargetUI4();
+  });
+});
+
+function updateTargetUI4(){
+  ['A','B','C','D'].forEach(key=>{
+    const grp = document.getElementById('grp4-'+key);
+    const tag = document.querySelector('.tag4-'+key);
+    const input = document.getElementById(crIds[key]);
+    if(key === target4){
+      grp.classList.add('is-target');
+      tag.innerHTML = '';
+      input.disabled = true;
+    } else {
+      grp.classList.remove('is-target');
+      tag.innerHTML = '';
+      input.disabled = false;
+    }
+  });
+  document.getElementById('result4').classList.remove('show');
+}
+updateTargetUI4();
+
+function calcCross(){
+  const el = document.getElementById('result4');
+  const vals = {};
+  ['A','B','C','D'].forEach(key=>{
+    vals[key] = parseFloat(document.getElementById(crIds[key]).value);
+  });
+
+  const known = ['A','B','C','D'].filter(k => k !== target4);
+  const missingInput = known.find(k => isNaN(vals[k]));
+  if(missingInput){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">${known.join(', ')} 값을 모두 입력해 주세요.</div>`;
+    return;
+  }
+
+  let result, formulaText;
+  if(target4 === 'A'){
+    if(vals.D === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">D값이 0이면 계산할 수 없습니다.</div>`; return; }
+    result = (vals.B * vals.C) / vals.D;
+    formulaText = `A = B × C ÷ D = ${vals.B} × ${vals.C} ÷ ${vals.D}`;
+  } else if(target4 === 'B'){
+    if(vals.C === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">C값이 0이면 계산할 수 없습니다.</div>`; return; }
+    result = (vals.A * vals.D) / vals.C;
+    formulaText = `B = A × D ÷ C = ${vals.A} × ${vals.D} ÷ ${vals.C}`;
+  } else if(target4 === 'C'){
+    if(vals.B === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">B값이 0이면 계산할 수 없습니다.</div>`; return; }
+    result = (vals.A * vals.D) / vals.B;
+    formulaText = `C = A × D ÷ B = ${vals.A} × ${vals.D} ÷ ${vals.B}`;
+  } else {
+    if(vals.A === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A값이 0이면 계산할 수 없습니다.</div>`; return; }
+    result = (vals.B * vals.C) / vals.A;
+    formulaText = `D = B × C ÷ A = ${vals.B} × ${vals.C} ÷ ${vals.A}`;
+  }
+
+  el.classList.remove('error');
+  el.classList.add('show');
+  el.innerHTML = `<div class="result-label">RESULT</div>` +
+    `<div class="result-value">${target4} = ${result.toFixed(4).replace(/\.?0+$/,'')}</div>` +
+    `<div class="result-sub">${formulaText}</div>`;
+}
+
+/* ---------- TAB 5 logic (필터 수량 산출) ---------- */
+let volMethod = 'wh';
+
+document.querySelectorAll('.vol-method').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.vol-method').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    volMethod = btn.dataset.method;
+    document.getElementById('vol-wh-fields').style.display = (volMethod==='wh') ? 'block' : 'none';
+    document.getElementById('vol-ah-fields').style.display = (volMethod==='ah') ? 'block' : 'none';
+    document.getElementById('vol-v-fields').style.display  = (volMethod==='v')  ? 'block' : 'none';
+    document.getElementById('result5').classList.remove('show');
+  });
+});
+
+function getRoomVolume(){
+  if(volMethod === 'wh'){
+    const w = parseFloat(document.getElementById('rmWidth').value);
+    const l = parseFloat(document.getElementById('rmLength').value);
+    const h = parseFloat(document.getElementById('rmHeightWH').value);
+    if(isNaN(w) || isNaN(l) || isNaN(h)) return null;
+    return w * l * h;
+  } else if(volMethod === 'ah'){
+    const a = parseFloat(document.getElementById('rmArea').value);
+    const h = parseFloat(document.getElementById('rmHeightAH').value);
+    if(isNaN(a) || isNaN(h)) return null;
+    return a * h;
+  } else {
+    const v = parseFloat(document.getElementById('rmVolume').value);
+    if(isNaN(v)) return null;
+    return v;
+  }
+}
+
+function calcFilterQty(){
+  const el = document.getElementById('result5');
+  el.classList.remove('error');
+
+  const volume = getRoomVolume();
+  if(volume === null || volume <= 0){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">룸 체적 계산을 위한 입력값을 확인해 주세요.</div>`;
+    return;
+  }
+
+  const ach = parseFloat(document.getElementById('ach').value);
+  if(isNaN(ach) || ach <= 0){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">환기횟수(ACH)를 입력해 주세요.</div>`;
+    return;
+  }
+
+  const unit = document.getElementById('filterUnit').value;
+  const flowVal = parseFloat(document.getElementById('filterFlow').value);
+  if(isNaN(flowVal) || flowVal <= 0){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">필터 1대당 풍량을 입력해 주세요.</div>`;
+    return;
+  }
+  const flowCMH = (unit === 'CMM') ? flowVal * 60 : flowVal;
+
+  const requiredCMH = volume * ach;
+  const qtyExact = requiredCMH / flowCMH;
+  const qty = Math.ceil(qtyExact);
+
+  el.classList.add('show');
+  el.innerHTML = `<div class="result-label">RESULT</div>` +
+    `<div class="result-value">${qty} 대</div>` +
+    `<div class="result-sub">` +
+      `룸 체적 = ${volume.toFixed(2)} m³<br>` +
+      `필요풍량 = 체적 × ACH = ${volume.toFixed(2)} × ${ach} = ${requiredCMH.toFixed(1)} CMH<br>` +
+      `필터 1대당 풍량 = ${flowVal} ${unit} (${flowCMH.toFixed(1)} CMH 환산)<br>` +
+      `산출 대수 = ${requiredCMH.toFixed(1)} ÷ ${flowCMH.toFixed(1)} = ${qtyExact.toFixed(2)} → 올림 ${qty}대` +
+    `</div>`;
 }
 </script>
 </body>
