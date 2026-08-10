@@ -695,31 +695,32 @@
     <div class="field-group" id="vol-wh-fields">
       <div class="field-group-title"><span data-i18n="fgTitleWH">가로 · 세로 · 천정고</span></div>
       <div class="row">
-        <div class="field"><label data-i18n="labelWidthM">가로 (m)</label><input type="number" id="rmWidth" placeholder="예: 10" data-i18n-ph="ph10"></div>
-        <div class="field"><label data-i18n="labelLengthM">세로 (m)</label><input type="number" id="rmLength" placeholder="예: 8" data-i18n-ph="ph8"></div>
-        <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightWH" placeholder="예: 3" data-i18n-ph="ph3"></div>
+        <div class="field"><label data-i18n="labelWidthM">가로 (m)</label><input type="number" id="rmWidth" placeholder="예: 10" data-i18n-ph="ph10" oninput="updateAchPreview()"></div>
+        <div class="field"><label data-i18n="labelLengthM">세로 (m)</label><input type="number" id="rmLength" placeholder="예: 8" data-i18n-ph="ph8" oninput="updateAchPreview()"></div>
+        <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightWH" placeholder="예: 3" data-i18n-ph="ph3" oninput="updateAchPreview()"></div>
       </div>
     </div>
 
     <div class="field-group" id="vol-ah-fields" style="display:none;">
       <div class="field-group-title"><span data-i18n="fgTitleAH">면적 · 천정고</span></div>
       <div class="row">
-        <div class="field"><label data-i18n="labelAreaM2">면적 (m²)</label><input type="number" id="rmArea" placeholder="예: 80" data-i18n-ph="ph80"></div>
-        <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightAH" placeholder="예: 3" data-i18n-ph="ph3"></div>
+        <div class="field"><label data-i18n="labelAreaM2">면적 (m²)</label><input type="number" id="rmArea" placeholder="예: 80" data-i18n-ph="ph80" oninput="updateAchPreview()"></div>
+        <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightAH" placeholder="예: 3" data-i18n-ph="ph3" oninput="updateAchPreview()"></div>
       </div>
     </div>
 
     <div class="field-group" id="vol-v-fields" style="display:none;">
       <div class="field-group-title"><span data-i18n="fgTitleV">체적 직접입력</span></div>
       <div class="row">
-        <div class="field"><label data-i18n="labelVolumeM3">체적 (m³)</label><input type="number" id="rmVolume" placeholder="예: 240" data-i18n-ph="ph240"></div>
+        <div class="field"><label data-i18n="labelVolumeM3">체적 (m³)</label><input type="number" id="rmVolume" placeholder="예: 240" data-i18n-ph="ph240" oninput="updateAchPreview()"></div>
       </div>
     </div>
 
     <div class="field-group">
       <div class="field-group-title"><span data-i18n="fgTitleACH">환기횟수</span></div>
       <div class="row">
-        <div class="field"><label data-i18n="labelACH">ACH (회/hr)</label><input type="number" id="ach" placeholder="예: 30" data-i18n-ph="ph30"></div>
+        <div class="field"><label data-i18n="labelACH">ACH (회/hr)</label><input type="number" id="ach" placeholder="예: 30" data-i18n-ph="ph30" oninput="updateAchPreview()"></div>
+        <div class="field"><label data-i18n="labelRequiredFlowPreview">필요환기량 (CMH)</label><input type="text" id="achPreview" placeholder="—" disabled></div>
       </div>
     </div>
 
@@ -835,7 +836,7 @@ const I18N = {
     fgTitleWH: "가로 · 세로 · 천정고", labelWidthM: "가로 (m)", labelLengthM: "세로 (m)", labelCeilingM: "천정고 (m)",
     fgTitleAH: "면적 · 천정고", labelAreaM2: "면적 (m²)",
     fgTitleV: "체적 직접입력", labelVolumeM3: "체적 (m³)",
-    fgTitleACH: "환기횟수", labelACH: "ACH (회/hr)",
+    fgTitleACH: "환기횟수", labelACH: "ACH (회/hr)", labelRequiredFlowPreview: "필요환기량 (CMH)",
     fgTitleFilterFlow: "필터 1대당 풍량",
     err_vol: "룸 체적 계산을 위한 입력값을 확인해 주세요.",
     err_ach: "환기횟수(ACH)를 입력해 주세요.",
@@ -923,7 +924,7 @@ const I18N = {
     fgTitleWH: "Width · Length · Ceiling height", labelWidthM: "Width (m)", labelLengthM: "Length (m)", labelCeilingM: "Ceiling height (m)",
     fgTitleAH: "Area · Ceiling height", labelAreaM2: "Area (m²)",
     fgTitleV: "Direct volume input", labelVolumeM3: "Volume (m³)",
-    fgTitleACH: "Air changes per hour", labelACH: "ACH (times/hr)",
+    fgTitleACH: "Air changes per hour", labelACH: "ACH (times/hr)", labelRequiredFlowPreview: "Required Airflow (CMH)",
     fgTitleFilterFlow: "Airflow per filter unit",
     err_vol: "Please check the input values for room volume calculation.",
     err_ach: "Please enter the air change rate (ACH).",
@@ -1011,7 +1012,7 @@ const I18N = {
     fgTitleWH: "Chiều rộng · Chiều dài · Chiều cao trần", labelWidthM: "Chiều rộng (m)", labelLengthM: "Chiều dài (m)", labelCeilingM: "Chiều cao trần (m)",
     fgTitleAH: "Diện tích · Chiều cao trần", labelAreaM2: "Diện tích (m²)",
     fgTitleV: "Nhập trực tiếp thể tích", labelVolumeM3: "Thể tích (m³)",
-    fgTitleACH: "Số lần thay đổi khí", labelACH: "ACH (lần/giờ)",
+    fgTitleACH: "Số lần thay đổi khí", labelACH: "ACH (lần/giờ)", labelRequiredFlowPreview: "Lưu lượng cần thiết (CMH)",
     fgTitleFilterFlow: "Lưu lượng mỗi bộ lọc",
     err_vol: "Vui lòng kiểm tra giá trị nhập để tính thể tích phòng.",
     err_ach: "Vui lòng nhập số lần thay đổi khí (ACH).",
@@ -1437,6 +1438,7 @@ document.querySelectorAll('.vol-method').forEach(btn=>{
     document.getElementById('vol-ah-fields').style.display = (volMethod==='ah') ? 'block' : 'none';
     document.getElementById('vol-v-fields').style.display  = (volMethod==='v')  ? 'block' : 'none';
     document.getElementById('result5').classList.remove('show');
+    updateAchPreview();
   });
 });
 
@@ -1457,6 +1459,18 @@ function getRoomVolume(){
     if(isNaN(v)) return null;
     return v;
   }
+}
+
+function updateAchPreview(){
+  const el = document.getElementById('achPreview');
+  const volume = getRoomVolume();
+  const ach = parseFloat(document.getElementById('ach').value);
+  if(volume === null || volume <= 0 || isNaN(ach) || ach <= 0){
+    el.value = '';
+    return;
+  }
+  const required = volume * ach;
+  el.value = required.toLocaleString('en-US', {maximumFractionDigits: 1}) + ' CMH';
 }
 
 function calcFilterQty(){
