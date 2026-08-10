@@ -238,8 +238,9 @@
     margin-bottom: 5px;
     font-family: var(--mono);
   }
-  input[type="number"], select{
+  input[type="number"], input[type="text"], select{
     width: 100%;
+    box-sizing: border-box;
     background: var(--bg-deep);
     border: 1px solid var(--line-strong);
     color: var(--ink);
@@ -248,8 +249,26 @@
     padding: 9px 10px;
     outline: none;
   }
-  input[type="number"]:focus, select:focus{ border-color: var(--cyan); }
+  input[type="number"]:focus, input[type="text"]:focus, select:focus{ border-color: var(--cyan); }
   select{ cursor: pointer; }
+
+  .ach-preview{
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-deep);
+    border: 1px solid var(--line-strong);
+    color: var(--amber);
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.35;
+    padding: 8px 10px;
+    min-height: 38px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .ach-preview.empty{ color: var(--muted); }
+  .ach-preview .cmm-line{ font-size: 11px; color: var(--muted); margin-top: 2px; }
 
   .shape-toggle{ display:flex; gap: 8px; margin-bottom: 10px; }
   .shape-toggle button{
@@ -720,7 +739,7 @@
       <div class="field-group-title"><span data-i18n="fgTitleACH">환기횟수</span></div>
       <div class="row">
         <div class="field"><label data-i18n="labelACH">ACH (회/hr)</label><input type="number" id="ach" placeholder="예: 30" data-i18n-ph="ph30" oninput="updateAchPreview()"></div>
-        <div class="field"><label data-i18n="labelRequiredFlowPreview">필요환기량 (CMH)</label><input type="text" id="achPreview" placeholder="—" disabled></div>
+        <div class="field"><label data-i18n="labelRequiredFlowPreview">필요환기량</label><div class="ach-preview empty" id="achPreview">—</div></div>
       </div>
     </div>
 
@@ -836,7 +855,7 @@ const I18N = {
     fgTitleWH: "가로 · 세로 · 천정고", labelWidthM: "가로 (m)", labelLengthM: "세로 (m)", labelCeilingM: "천정고 (m)",
     fgTitleAH: "면적 · 천정고", labelAreaM2: "면적 (m²)",
     fgTitleV: "체적 직접입력", labelVolumeM3: "체적 (m³)",
-    fgTitleACH: "환기횟수", labelACH: "ACH (회/hr)", labelRequiredFlowPreview: "필요환기량 (CMH)",
+    fgTitleACH: "환기횟수", labelACH: "ACH (회/hr)", labelRequiredFlowPreview: "필요환기량",
     fgTitleFilterFlow: "필터 1대당 풍량",
     err_vol: "룸 체적 계산을 위한 입력값을 확인해 주세요.",
     err_ach: "환기횟수(ACH)를 입력해 주세요.",
@@ -924,7 +943,7 @@ const I18N = {
     fgTitleWH: "Width · Length · Ceiling height", labelWidthM: "Width (m)", labelLengthM: "Length (m)", labelCeilingM: "Ceiling height (m)",
     fgTitleAH: "Area · Ceiling height", labelAreaM2: "Area (m²)",
     fgTitleV: "Direct volume input", labelVolumeM3: "Volume (m³)",
-    fgTitleACH: "Air changes per hour", labelACH: "ACH (times/hr)", labelRequiredFlowPreview: "Required Airflow (CMH)",
+    fgTitleACH: "Air changes per hour", labelACH: "ACH (times/hr)", labelRequiredFlowPreview: "Required Airflow",
     fgTitleFilterFlow: "Airflow per filter unit",
     err_vol: "Please check the input values for room volume calculation.",
     err_ach: "Please enter the air change rate (ACH).",
@@ -1012,7 +1031,7 @@ const I18N = {
     fgTitleWH: "Chiều rộng · Chiều dài · Chiều cao trần", labelWidthM: "Chiều rộng (m)", labelLengthM: "Chiều dài (m)", labelCeilingM: "Chiều cao trần (m)",
     fgTitleAH: "Diện tích · Chiều cao trần", labelAreaM2: "Diện tích (m²)",
     fgTitleV: "Nhập trực tiếp thể tích", labelVolumeM3: "Thể tích (m³)",
-    fgTitleACH: "Số lần thay đổi khí", labelACH: "ACH (lần/giờ)", labelRequiredFlowPreview: "Lưu lượng cần thiết (CMH)",
+    fgTitleACH: "Số lần thay đổi khí", labelACH: "ACH (lần/giờ)", labelRequiredFlowPreview: "Lưu lượng cần thiết",
     fgTitleFilterFlow: "Lưu lượng mỗi bộ lọc",
     err_vol: "Vui lòng kiểm tra giá trị nhập để tính thể tích phòng.",
     err_ach: "Vui lòng nhập số lần thay đổi khí (ACH).",
@@ -1466,11 +1485,15 @@ function updateAchPreview(){
   const volume = getRoomVolume();
   const ach = parseFloat(document.getElementById('ach').value);
   if(volume === null || volume <= 0 || isNaN(ach) || ach <= 0){
-    el.value = '';
+    el.classList.add('empty');
+    el.innerHTML = '—';
     return;
   }
-  const required = volume * ach;
-  el.value = required.toLocaleString('en-US', {maximumFractionDigits: 1}) + ' CMH';
+  const requiredCMH = volume * ach;
+  const requiredCMM = requiredCMH / 60;
+  el.classList.remove('empty');
+  el.innerHTML = `${requiredCMH.toLocaleString('en-US', {maximumFractionDigits: 1})} CMH` +
+    `<div class="cmm-line">${requiredCMM.toLocaleString('en-US', {maximumFractionDigits: 1})} CMM</div>`;
 }
 
 function calcFilterQty(){
