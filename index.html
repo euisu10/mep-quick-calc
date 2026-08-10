@@ -96,6 +96,31 @@
     margin-left: 8px;
   }
 
+  /* Language switcher */
+  .lang-switch{
+    display: flex;
+    gap: 2px;
+    border: 1px solid var(--line-strong);
+    padding: 2px;
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.15);
+  }
+  .lang-btn{
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.03em;
+    padding: 6px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .lang-btn.active{ background: var(--panel-2); color: var(--cyan); font-weight: 700; }
+  @media (max-width: 480px){
+    .lang-btn{ font-size: 9px; padding: 5px 6px; }
+  }
+
   /* Tabs styled like a drawing index */
   .tabs{
     display: flex;
@@ -382,158 +407,163 @@
 
   <header>
     <div class="header-text">
-      <h1>실무계산기<span class="rev-tag">· REV.02</span></h1>
+      <h1><span data-i18n="appTitle">실무계산기</span><span class="rev-tag">· REV.02</span></h1>
+    </div>
+    <div class="lang-switch">
+      <button class="lang-btn active" data-lang="ko">🇰🇷 KOR</button>
+      <button class="lang-btn" data-lang="en">🇺🇸 ENG</button>
+      <button class="lang-btn" data-lang="vi">🇻🇳 VIE</button>
     </div>
     <div class="logo-badge"><img src="data:image/jpeg;base64,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" alt="SHINSUNG E&amp;G"></div>
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="t1"><span class="num">01</span>풍량·풍속·면적</button>
-    <button class="tab-btn" data-tab="t5"><span class="num">02</span>필터 수량 산출</button>
-    <button class="tab-btn" data-tab="t3"><span class="num">03</span>선형보간</button>
-    <button class="tab-btn" data-tab="t2"><span class="num">04</span>견적 계산</button>
-    <button class="tab-btn" data-tab="t4"><span class="num">05</span>교차곱 계산</button>
+    <button class="tab-btn active" data-tab="t1"><span class="num">01</span> 💨 <span data-i18n="tab1">풍량·풍속·면적</span></button>
+    <button class="tab-btn" data-tab="t5"><span class="num">02</span> 🌀 <span data-i18n="tab2">필터 수량 산출</span></button>
+    <button class="tab-btn" data-tab="t3"><span class="num">03</span> 📈 <span data-i18n="tab3">선형보간</span></button>
+    <button class="tab-btn" data-tab="t2"><span class="num">04</span> 💰 <span data-i18n="tab4">견적 계산</span></button>
+    <button class="tab-btn" data-tab="t4"><span class="num">05</span> ⚖️ <span data-i18n="tab5">교차곱 계산</span></button>
   </div>
 
   <!-- ===================== TAB 1 : Q V A ===================== -->
   <section class="panel active" id="t1">
-    <h2>풍량 · 풍속 · 면적</h2>
-    <div class="formula">Q = A × V &nbsp; (Q: 풍량, A: 면적 m², V: 풍속 m/s)</div>
+    <h2>💨 <span data-i18n="t1Title">풍량 · 풍속 · 면적</span></h2>
+    <div class="formula" data-i18n="t1Formula">Q = A × V &nbsp; (Q: 풍량, A: 면적 m², V: 풍속 m/s)</div>
 
-    <div class="seg-label">구하고자 하는 값</div>
+    <div class="seg-label" data-i18n="segLabel1">구하고자 하는 값</div>
     <div class="seg">
-      <button class="seg-t1 active" data-target="Q">Q (풍량)</button>
-      <button class="seg-t1" data-target="V">V (풍속)</button>
-      <button class="seg-t1" data-target="A">A (면적)</button>
+      <button class="seg-t1 active" data-target="Q" data-i18n="t1SegQ">Q (풍량)</button>
+      <button class="seg-t1" data-target="V" data-i18n="t1SegV">V (풍속)</button>
+      <button class="seg-t1" data-target="A" data-i18n="t1SegA">A (면적)</button>
     </div>
 
     <!-- Q group -->
     <div class="field-group" id="grp-Q">
-      <div class="field-group-title"><span>Q &nbsp;풍량</span><span class="tag-Q"></span></div>
+      <div class="field-group-title">💨 <span data-i18n="t1GrpQ">Q &nbsp;풍량</span><span class="tag-Q"></span></div>
       <div class="row" id="grp-Q-input">
         <div class="field">
-          <label>단위</label>
+          <label data-i18n="labelUnit">단위</label>
           <select id="qUnit">
             <option value="CMM">CMM (m³/min)</option>
             <option value="CMH">CMH (m³/hr)</option>
           </select>
         </div>
         <div class="field">
-          <label>값</label>
-          <input type="number" id="qValue" placeholder="예: 600">
+          <label data-i18n="labelValue">값</label>
+          <input type="number" id="qValue" placeholder="예: 600" data-i18n-ph="ph600">
         </div>
       </div>
     </div>
 
     <!-- V group -->
     <div class="field-group" id="grp-V">
-      <div class="field-group-title"><span>V &nbsp;풍속</span><span class="tag-V"></span></div>
+      <div class="field-group-title">🌬️ <span data-i18n="t1GrpV">V &nbsp;풍속</span><span class="tag-V"></span></div>
       <div class="row" id="grp-V-input">
         <div class="field">
-          <label>값 (m/s)</label>
-          <input type="number" id="vValue" placeholder="예: 3.5">
+          <label data-i18n="labelValueMs">값 (m/s)</label>
+          <input type="number" id="vValue" placeholder="예: 3.5" data-i18n-ph="ph3_5">
         </div>
       </div>
     </div>
 
     <!-- A group -->
     <div class="field-group" id="grp-A">
-      <div class="field-group-title"><span>A &nbsp;면적</span><span class="tag-A"></span></div>
+      <div class="field-group-title">📐 <span data-i18n="t1GrpA">A &nbsp;면적</span><span class="tag-A"></span></div>
       <div id="grp-A-input">
         <div class="shape-toggle">
-          <button class="shape-btn active" data-shape="rect">사각형</button>
-          <button class="shape-btn" data-shape="circle">원형</button>
+          <button class="shape-btn active" data-shape="rect">⬛ <span data-i18n="shapeRect">사각형</span></button>
+          <button class="shape-btn" data-shape="circle">⚪ <span data-i18n="shapeCircle">원형</span></button>
         </div>
         <div class="row" id="shape-rect-fields">
           <div class="field">
-            <label>가로 (mm)</label>
-            <input type="number" id="aWidth" placeholder="예: 600">
+            <label data-i18n="labelWidthMm">가로 (mm)</label>
+            <input type="number" id="aWidth" placeholder="예: 600" data-i18n-ph="ph600">
           </div>
           <div class="field">
-            <label>세로 (mm)</label>
-            <input type="number" id="aHeight" placeholder="예: 400">
+            <label data-i18n="labelHeightMm">세로 (mm)</label>
+            <input type="number" id="aHeight" placeholder="예: 400" data-i18n-ph="ph400">
           </div>
         </div>
         <div class="row" id="shape-circle-fields" style="display:none;">
           <div class="field">
-            <label>지름 (mm)</label>
-            <input type="number" id="aDiameter" placeholder="예: 150">
+            <label data-i18n="labelDiameterMm">지름 (mm)</label>
+            <input type="number" id="aDiameter" placeholder="예: 150" data-i18n-ph="ph150">
           </div>
         </div>
       </div>
     </div>
 
-    <button class="calc-btn" onclick="calcQVA()">계산하기</button>
+    <button class="calc-btn" onclick="calcQVA()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
     <div class="result" id="result1"></div>
   </section>
 
   <!-- ===================== TAB 2 : 견적 계산 ===================== -->
   <section class="panel" id="t2">
-    <h2>견적 계산</h2>
-    <div class="formula">① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산</div>
+    <h2>💰 <span data-i18n="t2Title">견적 계산</span></h2>
+    <div class="formula" data-i18n="t2Formula">① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산</div>
 
-    <div class="seg-label">소기능 선택</div>
+    <div class="seg-label" data-i18n="segLabelSub">소기능 선택</div>
     <div class="seg">
-      <button class="seg-t2 active" data-sub="cmp">① 수치비교</button>
-      <button class="seg-t2" data-sub="rate">② 요율적용</button>
-      <button class="seg-t2" data-sub="target">③ 목표금액</button>
+      <button class="seg-t2 active" data-sub="cmp">📊 <span data-i18n="t2Seg1">① 수치비교</span></button>
+      <button class="seg-t2" data-sub="rate">💹 <span data-i18n="t2Seg2">② 요율적용</span></button>
+      <button class="seg-t2" data-sub="target">🎯 <span data-i18n="t2Seg3">③ 목표금액</span></button>
     </div>
 
     <!-- ① 수치 비교 -->
     <div class="sub2" id="sub2-cmp">
-      <h2 style="font-size:15px;margin:0 0 4px;">수치 비교 (증감률)</h2>
+      <h2 style="font-size:15px;margin:0 0 4px;">📊 <span data-i18n="cmpTitle">수치 비교 (증감률)</span></h2>
       <div class="formula">차이율(%) = (B − A) ÷ A × 100</div>
       <div class="field-group">
-        <div class="field-group-title"><span>입력값</span></div>
+        <div class="field-group-title"><span data-i18n="labelInputValues">입력값</span></div>
         <div class="row">
-          <div class="field"><label>A (기준값)</label><input type="number" id="cmpA" placeholder="예: 100"></div>
-          <div class="field"><label>B (비교값)</label><input type="number" id="cmpB" placeholder="예: 120"></div>
+          <div class="field"><label data-i18n="labelA_base">A (기준값)</label><input type="number" id="cmpA" placeholder="예: 100" data-i18n-ph="ph100"></div>
+          <div class="field"><label data-i18n="labelB_compare">B (비교값)</label><input type="number" id="cmpB" placeholder="예: 120" data-i18n-ph="ph120"></div>
         </div>
       </div>
-      <button class="calc-btn" onclick="calcCompare()">계산하기</button>
+      <button class="calc-btn" onclick="calcCompare()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
       <div class="result" id="result2"></div>
     </div>
 
     <!-- ② 요율 적용 -->
     <div class="sub2" id="sub2-rate" style="display:none;">
-      <div class="sub-note">기준금액 ± 요율(%) → 적용 금액 · 합계 금액</div>
+      <div class="sub-note" data-i18n="rateNote">기준금액 ± 요율(%) → 적용 금액 · 합계 금액</div>
       <div class="field-group">
         <div class="row">
-          <div class="field"><label>기준금액</label><input type="number" id="rateBase" placeholder="예: 100000000"></div>
-          <div class="field"><label>요율 (%)</label><input type="number" id="rateVal" placeholder="예: 15"></div>
+          <div class="field"><label data-i18n="labelBaseAmount">기준금액</label><input type="number" id="rateBase" placeholder="예: 100000000" data-i18n-ph="ph1e8"></div>
+          <div class="field"><label data-i18n="labelRatePct">요율 (%)</label><input type="number" id="rateVal" placeholder="예: 15" data-i18n-ph="ph15"></div>
         </div>
       </div>
       <div class="field-group">
-        <div class="field-group-title"><span>적용 방향</span></div>
+        <div class="field-group-title"><span data-i18n="labelApplyDir">적용 방향</span></div>
         <div class="radio-group">
-          <label><input type="radio" name="rateDir" value="add" checked> 가산 (+)</label>
-          <label><input type="radio" name="rateDir" value="sub"> 차감 (−)</label>
+          <label><input type="radio" name="rateDir" value="add" checked> ➕ <span data-i18n="dirAdd">가산 (+)</span></label>
+          <label><input type="radio" name="rateDir" value="sub"> ➖ <span data-i18n="dirSub">차감 (−)</span></label>
         </div>
       </div>
-      <button class="calc-btn" onclick="calcRateApply()">계산하기</button>
+      <button class="calc-btn" onclick="calcRateApply()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
       <div class="result" id="resultRate"></div>
     </div>
 
     <!-- ③ 목표 금액 역산 -->
     <div class="sub2" id="sub2-target" style="display:none;">
-      <div class="seg-label">구하고자 하는 값</div>
+      <div class="seg-label" data-i18n="segLabel1">구하고자 하는 값</div>
       <div class="seg">
-        <button class="seg-tgt active" data-tmode="amount">목표 금액</button>
-        <button class="seg-tgt" data-tmode="rate">필요 요율</button>
+        <button class="seg-tgt active" data-tmode="amount">🎯 <span data-i18n="tgtSegAmount">목표 금액</span></button>
+        <button class="seg-tgt" data-tmode="rate">🔄 <span data-i18n="tgtSegRate">필요 요율</span></button>
       </div>
 
       <div id="tmode-amount-fields">
         <div class="field-group">
           <div class="row">
-            <div class="field"><label>기준 금액</label><input type="number" id="tgtBase" placeholder="예: 100000000"></div>
-            <div class="field"><label>목표 요율 (%)</label><input type="number" id="tgtRate" placeholder="예: 15"></div>
+            <div class="field"><label data-i18n="labelBaseAmount2">기준 금액</label><input type="number" id="tgtBase" placeholder="예: 100000000" data-i18n-ph="ph1e8"></div>
+            <div class="field"><label data-i18n="labelTargetRate">목표 요율 (%)</label><input type="number" id="tgtRate" placeholder="예: 15" data-i18n-ph="ph15"></div>
           </div>
         </div>
         <div class="field-group">
-          <div class="field-group-title"><span>적용 방향</span></div>
+          <div class="field-group-title"><span data-i18n="labelApplyDir">적용 방향</span></div>
           <div class="radio-group">
-            <label><input type="radio" name="tgtDir" value="sub" checked> 절감 (차감)</label>
-            <label><input type="radio" name="tgtDir" value="add"> 가산</label>
+            <label><input type="radio" name="tgtDir" value="sub" checked> ➖ <span data-i18n="tgtDirSub">절감 (차감)</span></label>
+            <label><input type="radio" name="tgtDir" value="add"> ➕ <span data-i18n="wordAdd">가산</span></label>
           </div>
         </div>
       </div>
@@ -541,55 +571,55 @@
       <div id="tmode-rate-fields" style="display:none;">
         <div class="field-group">
           <div class="row">
-            <div class="field"><label>현재 금액</label><input type="number" id="tgtCurrent" placeholder="예: 100000000"></div>
-            <div class="field"><label>목표 금액</label><input type="number" id="tgtGoal" placeholder="예: 85000000"></div>
+            <div class="field"><label data-i18n="labelCurrentAmount">현재 금액</label><input type="number" id="tgtCurrent" placeholder="예: 100000000" data-i18n-ph="ph1e8"></div>
+            <div class="field"><label data-i18n="tgtSegAmount">목표 금액</label><input type="number" id="tgtGoal" placeholder="예: 85000000" data-i18n-ph="ph85e6"></div>
           </div>
         </div>
       </div>
 
-      <button class="calc-btn" onclick="calcTarget()">계산하기</button>
+      <button class="calc-btn" onclick="calcTarget()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
       <div class="result" id="resultTarget"></div>
     </div>
   </section>
 
   <!-- ===================== TAB 3 : 선형보간 ===================== -->
   <section class="panel" id="t3">
-    <h2>선형보간</h2>
+    <h2>📈 <span data-i18n="t3Title">선형보간</span></h2>
     <div class="formula">Y = B + (X − A) × (D − B) ÷ (C − A)</div>
 
     <div class="field-group">
-      <div class="field-group-title"><span>기준점 1</span></div>
+      <div class="field-group-title"><span data-i18n="grpLabel1">기준점 1</span></div>
       <div class="row">
-        <div class="field"><label>A</label><input type="number" id="liA" placeholder="예: 100"></div>
-        <div class="field"><label>B</label><input type="number" id="liB" placeholder="예: 100"></div>
+        <div class="field"><label>A</label><input type="number" id="liA" placeholder="예: 100" data-i18n-ph="ph100"></div>
+        <div class="field"><label>B</label><input type="number" id="liB" placeholder="예: 100" data-i18n-ph="ph100"></div>
       </div>
     </div>
 
     <div class="field-group">
-      <div class="field-group-title"><span>기준점 2</span></div>
+      <div class="field-group-title"><span data-i18n="grpLabel2">기준점 2</span></div>
       <div class="row">
-        <div class="field"><label>C</label><input type="number" id="liC" placeholder="예: 300"></div>
-        <div class="field"><label>D</label><input type="number" id="liD" placeholder="예: 500"></div>
+        <div class="field"><label>C</label><input type="number" id="liC" placeholder="예: 300" data-i18n-ph="ph300"></div>
+        <div class="field"><label>D</label><input type="number" id="liD" placeholder="예: 500" data-i18n-ph="ph500"></div>
       </div>
     </div>
 
     <div class="field-group is-target">
-      <div class="field-group-title"><span>구하고자 하는 지점</span></div>
+      <div class="field-group-title"><span data-i18n="grpLabelTarget">구하고자 하는 지점</span></div>
       <div class="row">
-        <div class="field"><label>X</label><input type="number" id="liX" placeholder="예: 200"></div>
+        <div class="field"><label>X</label><input type="number" id="liX" placeholder="예: 200" data-i18n-ph="ph200"></div>
       </div>
     </div>
 
-    <button class="calc-btn" onclick="calcInterp()">계산하기</button>
+    <button class="calc-btn" onclick="calcInterp()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
     <div class="result" id="result3"></div>
   </section>
 
   <!-- ===================== TAB 4 : 교차곱 계산 ===================== -->
   <section class="panel" id="t4">
-    <h2>교차곱 계산 (비례식)</h2>
-    <div class="formula">A : B = C : D &nbsp;(A × D = B × C) &nbsp; (A,B,C,D 중 3개 값으로 나머지 1개 계산)</div>
+    <h2>⚖️ <span data-i18n="t4Title">교차곱 계산 (비례식)</span></h2>
+    <div class="formula" data-i18n="t4Formula">A : B = C : D &nbsp;(A × D = B × C) &nbsp; (A,B,C,D 중 3개 값으로 나머지 1개 계산)</div>
 
-    <div class="seg-label">구하고자 하는 값</div>
+    <div class="seg-label" data-i18n="segLabel1">구하고자 하는 값</div>
     <div class="seg">
       <button class="seg-t4 active" data-target="A">A</button>
       <button class="seg-t4" data-target="B">B</button>
@@ -599,111 +629,418 @@
 
     <div class="field-group" id="grp4-A">
       <div class="field-group-title"><span>A</span><span class="tag4-A"></span></div>
-      <div class="row"><div class="field"><input type="number" id="crA" placeholder="예: 100"></div></div>
+      <div class="row"><div class="field"><input type="number" id="crA" placeholder="예: 100" data-i18n-ph="ph100"></div></div>
     </div>
     <div class="field-group" id="grp4-B">
       <div class="field-group-title"><span>B</span><span class="tag4-B"></span></div>
-      <div class="row"><div class="field"><input type="number" id="crB" placeholder="예: 4"></div></div>
+      <div class="row"><div class="field"><input type="number" id="crB" placeholder="예: 4" data-i18n-ph="ph4"></div></div>
     </div>
     <div class="field-group" id="grp4-C">
       <div class="field-group-title"><span>C</span><span class="tag4-C"></span></div>
-      <div class="row"><div class="field"><input type="number" id="crC" placeholder="예: 200"></div></div>
+      <div class="row"><div class="field"><input type="number" id="crC" placeholder="예: 200" data-i18n-ph="ph200_2"></div></div>
     </div>
     <div class="field-group" id="grp4-D">
       <div class="field-group-title"><span>D</span><span class="tag4-D"></span></div>
-      <div class="row"><div class="field"><input type="number" id="crD" placeholder="예: 8"></div></div>
+      <div class="row"><div class="field"><input type="number" id="crD" placeholder="예: 8" data-i18n-ph="ph8"></div></div>
     </div>
 
-    <button class="calc-btn" onclick="calcCross()">계산하기</button>
+    <button class="calc-btn" onclick="calcCross()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
     <div class="result" id="result4"></div>
   </section>
 
   <!-- ===================== TAB 5 : 필터(BFU/FFU) 수량 산출 ===================== -->
   <section class="panel" id="t5">
-    <h2>필터(BFU · FFU) 수량 산출</h2>
-    <div class="formula">필요풍량(CMH) = 룸 체적(m³) × 환기횟수(회/hr) &nbsp;→&nbsp; 필터 대수 = 필요풍량 ÷ 필터 1대당 풍량</div>
+    <h2>🌀 <span data-i18n="t5Title">필터(BFU · FFU) 수량 산출</span></h2>
+    <div class="formula" data-i18n="t5Formula">필요풍량(CMH) = 룸 체적(m³) × 환기횟수(회/hr) &nbsp;→&nbsp; 필터 대수 = 필요풍량 ÷ 필터 1대당 풍량</div>
 
     <div class="ref-panel">
-      <div class="ref-panel-title">참조 : CLASS별 환기횟수 기준</div>
+      <div class="ref-panel-title">📋 <span data-i18n="refPanelTitle">참조 : CLASS별 환기횟수 기준</span></div>
       <div class="ref-cols">
         <div class="ref-col">
-          <div class="ref-col-h">클린 환기 (CLASS 기준)</div>
-          <div class="ref-row"><span class="k">CLASS 100,000</span><span>20~30회</span></div>
-          <div class="ref-row"><span class="k">CLASS 10,000</span><span>30~40회</span></div>
-          <div class="ref-row"><span class="k">CLASS 1,000</span><span>50~70회</span></div>
-          <div class="ref-row"><span class="k">CLASS 100</span><span>200~600회</span></div>
-          <div class="ref-row"><span class="k">CLASS 10</span><span>FFU 꽉 채움(500회 이상)</span></div>
+          <div class="ref-col-h" data-i18n="refColH1">클린 환기 (CLASS 기준)</div>
+          <div class="ref-row"><span class="k">CLASS 100,000</span><span data-i18n="ref_100000">20~30회</span></div>
+          <div class="ref-row"><span class="k">CLASS 10,000</span><span data-i18n="ref_10000">30~40회</span></div>
+          <div class="ref-row"><span class="k">CLASS 1,000</span><span data-i18n="ref_1000">50~70회</span></div>
+          <div class="ref-row"><span class="k">CLASS 100</span><span data-i18n="ref_100">200~600회</span></div>
+          <div class="ref-row"><span class="k">CLASS 10</span><span data-i18n="ref_10">FFU 꽉 채움(500회 이상)</span></div>
         </div>
         <div class="ref-col">
-          <div class="ref-col-h">공조 환기 (온도편차 기준)</div>
-          <div class="ref-row"><span class="k">±1℃</span><span>20회 이상</span></div>
-          <div class="ref-row"><span class="k">±2℃</span><span>15회</span></div>
-          <div class="ref-row"><span class="k">±3℃</span><span>10회</span></div>
+          <div class="ref-col-h" data-i18n="refColH2">공조 환기 (온도편차 기준)</div>
+          <div class="ref-row"><span class="k">±1℃</span><span data-i18n="ref_t1">20회 이상</span></div>
+          <div class="ref-row"><span class="k">±2℃</span><span data-i18n="ref_t2">15회</span></div>
+          <div class="ref-row"><span class="k">±3℃</span><span data-i18n="ref_t3">10회</span></div>
         </div>
       </div>
-      <div class="ref-note">Class 1~100은 필터 면풍속 0.25~0.45 m/s 기준으로 별도 검토. 위 수치는 참고용이며, 실제 값은 프로젝트 기준에 맞춰 아래 입력란에 직접 입력하세요.</div>
+      <div class="ref-note" data-i18n="refNote">Class 1~100은 필터 면풍속 0.25~0.45 m/s 기준으로 별도 검토. 위 수치는 참고용이며, 실제 값은 프로젝트 기준에 맞춰 아래 입력란에 직접 입력하세요.</div>
     </div>
 
-    <div class="seg-label">룸 체적 입력 방식</div>
+    <div class="seg-label" data-i18n="volMethodLabel">룸 체적 입력 방식</div>
     <div class="method-toggle">
-      <button class="vol-method active" data-method="wh">가로·세로 + 천정고</button>
-      <button class="vol-method" data-method="ah">면적(m²) + 천정고</button>
-      <button class="vol-method" data-method="v">체적(m³) 직접입력</button>
+      <button class="vol-method active" data-method="wh">📏 <span data-i18n="volMethod1">가로·세로 + 천정고</span></button>
+      <button class="vol-method" data-method="ah">📐 <span data-i18n="volMethod2">면적(m²) + 천정고</span></button>
+      <button class="vol-method" data-method="v">🧱 <span data-i18n="volMethod3">체적(m³) 직접입력</span></button>
     </div>
 
     <div class="field-group" id="vol-wh-fields">
-      <div class="field-group-title"><span>가로 · 세로 · 천정고</span></div>
+      <div class="field-group-title"><span data-i18n="fgTitleWH">가로 · 세로 · 천정고</span></div>
       <div class="row">
-        <div class="field"><label>가로 (m)</label><input type="number" id="rmWidth" placeholder="예: 10"></div>
-        <div class="field"><label>세로 (m)</label><input type="number" id="rmLength" placeholder="예: 8"></div>
-        <div class="field"><label>천정고 (m)</label><input type="number" id="rmHeightWH" placeholder="예: 3"></div>
+        <div class="field"><label data-i18n="labelWidthM">가로 (m)</label><input type="number" id="rmWidth" placeholder="예: 10" data-i18n-ph="ph10"></div>
+        <div class="field"><label data-i18n="labelLengthM">세로 (m)</label><input type="number" id="rmLength" placeholder="예: 8" data-i18n-ph="ph8"></div>
+        <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightWH" placeholder="예: 3" data-i18n-ph="ph3"></div>
       </div>
     </div>
 
     <div class="field-group" id="vol-ah-fields" style="display:none;">
-      <div class="field-group-title"><span>면적 · 천정고</span></div>
+      <div class="field-group-title"><span data-i18n="fgTitleAH">면적 · 천정고</span></div>
       <div class="row">
-        <div class="field"><label>면적 (m²)</label><input type="number" id="rmArea" placeholder="예: 80"></div>
-        <div class="field"><label>천정고 (m)</label><input type="number" id="rmHeightAH" placeholder="예: 3"></div>
+        <div class="field"><label data-i18n="labelAreaM2">면적 (m²)</label><input type="number" id="rmArea" placeholder="예: 80" data-i18n-ph="ph80"></div>
+        <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightAH" placeholder="예: 3" data-i18n-ph="ph3"></div>
       </div>
     </div>
 
     <div class="field-group" id="vol-v-fields" style="display:none;">
-      <div class="field-group-title"><span>체적 직접입력</span></div>
+      <div class="field-group-title"><span data-i18n="fgTitleV">체적 직접입력</span></div>
       <div class="row">
-        <div class="field"><label>체적 (m³)</label><input type="number" id="rmVolume" placeholder="예: 240"></div>
+        <div class="field"><label data-i18n="labelVolumeM3">체적 (m³)</label><input type="number" id="rmVolume" placeholder="예: 240" data-i18n-ph="ph240"></div>
       </div>
     </div>
 
     <div class="field-group">
-      <div class="field-group-title"><span>환기횟수</span></div>
+      <div class="field-group-title"><span data-i18n="fgTitleACH">환기횟수</span></div>
       <div class="row">
-        <div class="field"><label>ACH (회/hr)</label><input type="number" id="ach" placeholder="예: 30"></div>
+        <div class="field"><label data-i18n="labelACH">ACH (회/hr)</label><input type="number" id="ach" placeholder="예: 30" data-i18n-ph="ph30"></div>
       </div>
     </div>
 
     <div class="field-group">
-      <div class="field-group-title"><span>필터 1대당 풍량</span></div>
+      <div class="field-group-title"><span data-i18n="fgTitleFilterFlow">필터 1대당 풍량</span></div>
       <div class="row">
         <div class="field">
-          <label>단위</label>
+          <label data-i18n="labelUnit">단위</label>
           <select id="filterUnit">
             <option value="CMM">CMM (m³/min)</option>
             <option value="CMH">CMH (m³/hr)</option>
           </select>
         </div>
-        <div class="field"><label>값</label><input type="number" id="filterFlow" placeholder="예: 30"></div>
+        <div class="field"><label data-i18n="labelValue">값</label><input type="number" id="filterFlow" placeholder="예: 30" data-i18n-ph="ph30"></div>
       </div>
     </div>
 
-    <button class="calc-btn" onclick="calcFilterQty()">계산하기</button>
+    <button class="calc-btn" onclick="calcFilterQty()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
     <div class="result" id="result5"></div>
   </section>
 
-  <footer>MEP QUICK CALC — 사내 실무 검토용 계산 도구</footer>
+  <footer>🛠️ <span data-i18n="footerText">MEP QUICK CALC — 사내 실무 검토용 계산 도구</span></footer>
 </div>
 
 <script>
+/* ============ i18n ============ */
+let currentLang = 'ko';
+
+const I18N = {
+  ko: {
+    appTitle: "실무계산기",
+    tab1: "풍량·풍속·면적", tab2: "필터 수량 산출", tab3: "선형보간", tab4: "견적 계산", tab5: "교차곱 계산",
+    footerText: "MEP QUICK CALC — 사내 실무 검토용 계산 도구",
+    btnCalc: "계산하기",
+    segLabel1: "구하고자 하는 값",
+    segLabelSub: "소기능 선택",
+    labelUnit: "단위", labelValue: "값",
+    ph600: "예: 600", ph400: "예: 400", ph150: "예: 150", ph3_5: "예: 3.5",
+    ph100: "예: 100", ph120: "예: 120", ph300: "예: 300", ph500: "예: 500", ph200: "예: 200",
+    ph4: "예: 4", ph200_2: "예: 200", ph8: "예: 8",
+    ph1e8: "예: 100000000", ph15: "예: 15", ph85e6: "예: 85000000",
+    ph10: "예: 10", ph3: "예: 3", ph80: "예: 80", ph240: "예: 240", ph30: "예: 30",
+
+    // TAB1
+    t1Title: "풍량 · 풍속 · 면적",
+    t1Formula: "Q = A × V &nbsp; (Q: 풍량, A: 면적 m², V: 풍속 m/s)",
+    t1SegQ: "Q (풍량)", t1SegV: "V (풍속)", t1SegA: "A (면적)",
+    t1GrpQ: "Q &nbsp;풍량", t1GrpV: "V &nbsp;풍속", t1GrpA: "A &nbsp;면적",
+    labelValueMs: "값 (m/s)",
+    shapeRect: "사각형", shapeCircle: "원형",
+    labelWidthMm: "가로 (mm)", labelHeightMm: "세로 (mm)", labelDiameterMm: "지름 (mm)",
+    err_qva_va: "입력값을 확인해 주세요 (V, A).",
+    err_qva_qa: "입력값을 확인해 주세요 (Q, A). A는 0이 될 수 없습니다.",
+    err_qva_qv: "입력값을 확인해 주세요 (Q, V). V는 0이 될 수 없습니다.",
+    qvaSubQ: "A = {a} m² · V = {v} m/s 로 계산",
+    qvaSubV: "Q = {q} {unit} · A = {a} m² 로 계산",
+    qvaSubA1: "Q = {q} {unit} · V = {v} m/s 로 계산",
+    qvaSubA2: "원형 환산 시 지름 ≈ {d} mm",
+    qvaSubA3: "사각형 환산: 한 변을 알면 아래에서 나머지 변을 확인하세요.",
+    labelOneSide: "한 변 (mm)", labelOtherSide: "나머지 변 (mm)",
+
+    // TAB2
+    t2Title: "견적 계산",
+    t2Formula: "① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산",
+    t2Seg1: "① 수치비교", t2Seg2: "② 요율적용", t2Seg3: "③ 목표금액",
+    cmpTitle: "수치 비교 (증감률)",
+    labelInputValues: "입력값",
+    labelA_base: "A (기준값)", labelB_compare: "B (비교값)",
+    err_cmp_input: "A, B 값을 입력해 주세요.",
+    err_cmp_zero: "기준값(A)이 0이면 계산할 수 없습니다.",
+    cmpHigh: "B는 A 대비 {pct}% 높음", cmpLow: "B는 A 대비 {pct}% 낮음", cmpEqual: "A와 B가 동일합니다",
+    cmpSub: "절대값 차이 = {diff} · 차이율 = {pct}%",
+    rateNote: "기준금액 ± 요율(%) → 적용 금액 · 합계 금액",
+    labelBaseAmount: "기준금액", labelBaseAmount2: "기준 금액", labelRatePct: "요율 (%)",
+    labelApplyDir: "적용 방향", dirAdd: "가산 (+)", dirSub: "차감 (−)",
+    wordAdd: "가산", wordSub: "차감", wordSaving: "절감", wordNoChange: "변화 없음",
+    err_rate_input: "기준금액, 요율 값을 입력해 주세요.",
+    rateSub: "{dir} 금액 = {applied}<br>기준금액 {base} {sign} {rateVal}% = {result}",
+    tgtSegAmount: "목표 금액", tgtSegRate: "필요 요율",
+    labelTargetRate: "목표 요율 (%)", tgtDirSub: "절감 (차감)",
+    labelCurrentAmount: "현재 금액",
+    err_tgt_input1: "기준 금액, 목표 요율 값을 입력해 주세요.",
+    tgtSubAmount: "{dir} 금액 = {adjust}<br>목표 금액 = 기준금액 {base} {sign} {rateVal}% = {goal}",
+    err_tgt_input2: "현재 금액, 목표 금액 값을 입력해 주세요.",
+    err_tgt_zero: "현재 금액이 0이면 계산할 수 없습니다.",
+    tgtRateSub: "차이 금액 = {diff}<br>현재 금액 {current} → 목표 금액 {goal} 필요 {dir}률 {rate}%",
+
+    // TAB3
+    t3Title: "선형보간",
+    grpLabel1: "기준점 1", grpLabel2: "기준점 2", grpLabelTarget: "구하고자 하는 지점",
+    err_interp_all: "A, B, C, D, X 값을 모두 입력해 주세요.",
+    err_interp_eq: "A값과 C값이 같으면 계산할 수 없습니다.",
+    interpSub: "(A={A}, B={B}) ↔ (C={C}, D={D}) 구간에서 X={X} 지점 선형보간",
+
+    // TAB4
+    t4Title: "교차곱 계산 (비례식)",
+    t4Formula: "A : B = C : D &nbsp;(A × D = B × C) &nbsp; (A,B,C,D 중 3개 값으로 나머지 1개 계산)",
+    err_t4_missing: "{known} 값을 모두 입력해 주세요.",
+    err_t4_zero: "{letter}값이 0이면 계산할 수 없습니다.",
+
+    // TAB5
+    t5Title: "필터(BFU · FFU) 수량 산출",
+    t5Formula: "필요풍량(CMH) = 룸 체적(m³) × 환기횟수(회/hr) &nbsp;→&nbsp; 필터 대수 = 필요풍량 ÷ 필터 1대당 풍량",
+    refPanelTitle: "참조 : CLASS별 환기횟수 기준",
+    refColH1: "클린 환기 (CLASS 기준)", refColH2: "공조 환기 (온도편차 기준)",
+    ref_100000: "20~30회", ref_10000: "30~40회", ref_1000: "50~70회", ref_100: "200~600회",
+    ref_10: "FFU 꽉 채움(500회 이상)",
+    ref_t1: "20회 이상", ref_t2: "15회", ref_t3: "10회",
+    refNote: "Class 1~100은 필터 면풍속 0.25~0.45 m/s 기준으로 별도 검토. 위 수치는 참고용이며, 실제 값은 프로젝트 기준에 맞춰 아래 입력란에 직접 입력하세요.",
+    volMethodLabel: "룸 체적 입력 방식",
+    volMethod1: "가로·세로 + 천정고", volMethod2: "면적(m²) + 천정고", volMethod3: "체적(m³) 직접입력",
+    fgTitleWH: "가로 · 세로 · 천정고", labelWidthM: "가로 (m)", labelLengthM: "세로 (m)", labelCeilingM: "천정고 (m)",
+    fgTitleAH: "면적 · 천정고", labelAreaM2: "면적 (m²)",
+    fgTitleV: "체적 직접입력", labelVolumeM3: "체적 (m³)",
+    fgTitleACH: "환기횟수", labelACH: "ACH (회/hr)",
+    fgTitleFilterFlow: "필터 1대당 풍량",
+    err_vol: "룸 체적 계산을 위한 입력값을 확인해 주세요.",
+    err_ach: "환기횟수(ACH)를 입력해 주세요.",
+    err_filterFlow: "필터 1대당 풍량을 입력해 주세요.",
+    t5Sub: "룸 체적 = {volume} m³<br>필요풍량 = 체적 × ACH = {volume} × {ach} = {required} CMH<br>필터 1대당 풍량 = {flowVal} {unit} ({flowCMH} CMH 환산)<br>산출 대수 = {required} ÷ {flowCMH} = {qtyExact} → 올림 {qty}대",
+    unitDae: "대"
+  },
+  en: {
+    appTitle: "MEP Calculator",
+    tab1: "Airflow·Velocity·Area", tab2: "Filter Quantity", tab3: "Linear Interp.", tab4: "Estimate Calc", tab5: "Cross Multiplication",
+    footerText: "MEP QUICK CALC — Internal field-review calculation tool",
+    btnCalc: "Calculate",
+    segLabel1: "Value to solve for",
+    segLabelSub: "Select function",
+    labelUnit: "Unit", labelValue: "Value",
+    ph600: "e.g. 600", ph400: "e.g. 400", ph150: "e.g. 150", ph3_5: "e.g. 3.5",
+    ph100: "e.g. 100", ph120: "e.g. 120", ph300: "e.g. 300", ph500: "e.g. 500", ph200: "e.g. 200",
+    ph4: "e.g. 4", ph200_2: "e.g. 200", ph8: "e.g. 8",
+    ph1e8: "e.g. 100000000", ph15: "e.g. 15", ph85e6: "e.g. 85000000",
+    ph10: "e.g. 10", ph3: "e.g. 3", ph80: "e.g. 80", ph240: "e.g. 240", ph30: "e.g. 30",
+
+    t1Title: "Airflow · Velocity · Area",
+    t1Formula: "Q = A × V &nbsp; (Q: Airflow, A: Area m², V: Velocity m/s)",
+    t1SegQ: "Q (Airflow)", t1SegV: "V (Velocity)", t1SegA: "A (Area)",
+    t1GrpQ: "Q &nbsp;Airflow", t1GrpV: "V &nbsp;Velocity", t1GrpA: "A &nbsp;Area",
+    labelValueMs: "Value (m/s)",
+    shapeRect: "Rectangle", shapeCircle: "Circle",
+    labelWidthMm: "Width (mm)", labelHeightMm: "Height (mm)", labelDiameterMm: "Diameter (mm)",
+    err_qva_va: "Please check the input values (V, A).",
+    err_qva_qa: "Please check the input values (Q, A). A cannot be 0.",
+    err_qva_qv: "Please check the input values (Q, V). V cannot be 0.",
+    qvaSubQ: "Calculated with A = {a} m² and V = {v} m/s",
+    qvaSubV: "Calculated with Q = {q} {unit} and A = {a} m²",
+    qvaSubA1: "Calculated with Q = {q} {unit} and V = {v} m/s",
+    qvaSubA2: "If circular, diameter ≈ {d} mm",
+    qvaSubA3: "For rectangular conversion, enter one side below to see the other.",
+    labelOneSide: "One side (mm)", labelOtherSide: "Other side (mm)",
+
+    t2Title: "Estimate Calculation",
+    t2Formula: "① Compare Values · ② Apply Rate · ③ Back-calc Target Amount",
+    t2Seg1: "① Compare", t2Seg2: "② Apply Rate", t2Seg3: "③ Target Amount",
+    cmpTitle: "Value Comparison (Rate of Change)",
+    labelInputValues: "Input values",
+    labelA_base: "A (Base value)", labelB_compare: "B (Compare value)",
+    err_cmp_input: "Please enter values for A and B.",
+    err_cmp_zero: "Cannot calculate when the base value (A) is 0.",
+    cmpHigh: "B is {pct}% higher than A", cmpLow: "B is {pct}% lower than A", cmpEqual: "A and B are equal",
+    cmpSub: "Absolute difference = {diff} · Rate of change = {pct}%",
+    rateNote: "Base amount ± rate(%) → Applied amount · Total amount",
+    labelBaseAmount: "Base amount", labelBaseAmount2: "Base amount", labelRatePct: "Rate (%)",
+    labelApplyDir: "Apply direction", dirAdd: "Add (+)", dirSub: "Subtract (−)",
+    wordAdd: "Add", wordSub: "Subtract", wordSaving: "Reduction", wordNoChange: "No change",
+    err_rate_input: "Please enter the base amount and rate.",
+    rateSub: "{dir} amount = {applied}<br>Base amount {base} {sign} {rateVal}% = {result}",
+    tgtSegAmount: "Target amount", tgtSegRate: "Required rate",
+    labelTargetRate: "Target rate (%)", tgtDirSub: "Reduction (subtract)",
+    labelCurrentAmount: "Current amount",
+    err_tgt_input1: "Please enter the base amount and target rate.",
+    tgtSubAmount: "{dir} amount = {adjust}<br>Target amount = Base amount {base} {sign} {rateVal}% = {goal}",
+    err_tgt_input2: "Please enter the current amount and target amount.",
+    err_tgt_zero: "Cannot calculate when the current amount is 0.",
+    tgtRateSub: "Difference amount = {diff}<br>Current amount {current} → Target amount {goal} requires {dir} rate {rate}%",
+
+    t3Title: "Linear Interpolation",
+    grpLabel1: "Reference point 1", grpLabel2: "Reference point 2", grpLabelTarget: "Point to solve for",
+    err_interp_all: "Please enter all values for A, B, C, D, X.",
+    err_interp_eq: "Cannot calculate when A equals C.",
+    interpSub: "Linear interpolation at X={X} within the (A={A}, B={B}) ↔ (C={C}, D={D}) range",
+
+    t4Title: "Cross Multiplication (Proportion)",
+    t4Formula: "A : B = C : D &nbsp;(A × D = B × C) &nbsp; (Enter any 3 of A,B,C,D to calculate the remaining one)",
+    err_t4_missing: "Please enter values for {known}.",
+    err_t4_zero: "Cannot calculate when {letter} is 0.",
+
+    t5Title: "Filter (BFU · FFU) Quantity Calculation",
+    t5Formula: "Required airflow (CMH) = Room volume (m³) × ACH (times/hr) &nbsp;→&nbsp; Filter qty = Required airflow ÷ Airflow per filter",
+    refPanelTitle: "Reference: ACH by CLASS",
+    refColH1: "Clean room ventilation (by CLASS)", refColH2: "HVAC ventilation (by temp. deviation)",
+    ref_100000: "20-30 times/hr", ref_10000: "30-40 times/hr", ref_1000: "50-70 times/hr", ref_100: "200-600 times/hr",
+    ref_10: "FFU fully packed (500+ times/hr)",
+    ref_t1: "20+ times/hr", ref_t2: "15 times/hr", ref_t3: "10 times/hr",
+    refNote: "For Class 1-100, review separately based on filter face velocity 0.25-0.45 m/s. The figures above are for reference only — enter the actual project values in the fields below.",
+    volMethodLabel: "Room volume input method",
+    volMethod1: "Width·Length + Ceiling height", volMethod2: "Area (m²) + Ceiling height", volMethod3: "Direct volume (m³) input",
+    fgTitleWH: "Width · Length · Ceiling height", labelWidthM: "Width (m)", labelLengthM: "Length (m)", labelCeilingM: "Ceiling height (m)",
+    fgTitleAH: "Area · Ceiling height", labelAreaM2: "Area (m²)",
+    fgTitleV: "Direct volume input", labelVolumeM3: "Volume (m³)",
+    fgTitleACH: "Air changes per hour", labelACH: "ACH (times/hr)",
+    fgTitleFilterFlow: "Airflow per filter unit",
+    err_vol: "Please check the input values for room volume calculation.",
+    err_ach: "Please enter the air change rate (ACH).",
+    err_filterFlow: "Please enter the airflow per filter unit.",
+    t5Sub: "Room volume = {volume} m³<br>Required airflow = Volume × ACH = {volume} × {ach} = {required} CMH<br>Airflow per filter = {flowVal} {unit} (converted to {flowCMH} CMH)<br>Calculated qty = {required} ÷ {flowCMH} = {qtyExact} → rounded up to {qty} units",
+    unitDae: "units"
+  },
+  vi: {
+    appTitle: "Máy tính MEP",
+    tab1: "Lưu lượng·Tốc độ·Diện tích", tab2: "Số lượng lọc", tab3: "Nội suy tuyến tính", tab4: "Tính báo giá", tab5: "Tính tỷ lệ thức",
+    footerText: "MEP QUICK CALC — Công cụ tính toán rà soát nội bộ",
+    btnCalc: "Tính toán",
+    segLabel1: "Giá trị cần tính",
+    segLabelSub: "Chọn chức năng",
+    labelUnit: "Đơn vị", labelValue: "Giá trị",
+    ph600: "VD: 600", ph400: "VD: 400", ph150: "VD: 150", ph3_5: "VD: 3.5",
+    ph100: "VD: 100", ph120: "VD: 120", ph300: "VD: 300", ph500: "VD: 500", ph200: "VD: 200",
+    ph4: "VD: 4", ph200_2: "VD: 200", ph8: "VD: 8",
+    ph1e8: "VD: 100000000", ph15: "VD: 15", ph85e6: "VD: 85000000",
+    ph10: "VD: 10", ph3: "VD: 3", ph80: "VD: 80", ph240: "VD: 240", ph30: "VD: 30",
+
+    t1Title: "Lưu lượng · Tốc độ · Diện tích",
+    t1Formula: "Q = A × V &nbsp; (Q: Lưu lượng, A: Diện tích m², V: Tốc độ m/s)",
+    t1SegQ: "Q (Lưu lượng)", t1SegV: "V (Tốc độ)", t1SegA: "A (Diện tích)",
+    t1GrpQ: "Q &nbsp;Lưu lượng", t1GrpV: "V &nbsp;Tốc độ", t1GrpA: "A &nbsp;Diện tích",
+    labelValueMs: "Giá trị (m/s)",
+    shapeRect: "Hình chữ nhật", shapeCircle: "Hình tròn",
+    labelWidthMm: "Chiều rộng (mm)", labelHeightMm: "Chiều cao (mm)", labelDiameterMm: "Đường kính (mm)",
+    err_qva_va: "Vui lòng kiểm tra giá trị nhập (V, A).",
+    err_qva_qa: "Vui lòng kiểm tra giá trị nhập (Q, A). A không được bằng 0.",
+    err_qva_qv: "Vui lòng kiểm tra giá trị nhập (Q, V). V không được bằng 0.",
+    qvaSubQ: "Tính với A = {a} m² và V = {v} m/s",
+    qvaSubV: "Tính với Q = {q} {unit} và A = {a} m²",
+    qvaSubA1: "Tính với Q = {q} {unit} và V = {v} m/s",
+    qvaSubA2: "Nếu quy đổi tròn, đường kính ≈ {d} mm",
+    qvaSubA3: "Quy đổi chữ nhật: nhập một cạnh bên dưới để xem cạnh còn lại.",
+    labelOneSide: "Một cạnh (mm)", labelOtherSide: "Cạnh còn lại (mm)",
+
+    t2Title: "Tính toán báo giá",
+    t2Formula: "① So sánh số liệu · ② Áp dụng tỷ lệ · ③ Tính ngược số tiền mục tiêu",
+    t2Seg1: "① So sánh", t2Seg2: "② Áp dụng tỷ lệ", t2Seg3: "③ Số tiền mục tiêu",
+    cmpTitle: "So sánh số liệu (Tỷ lệ thay đổi)",
+    labelInputValues: "Giá trị nhập",
+    labelA_base: "A (Giá trị gốc)", labelB_compare: "B (Giá trị so sánh)",
+    err_cmp_input: "Vui lòng nhập giá trị A và B.",
+    err_cmp_zero: "Không thể tính khi giá trị gốc (A) bằng 0.",
+    cmpHigh: "B cao hơn A {pct}%", cmpLow: "B thấp hơn A {pct}%", cmpEqual: "A và B bằng nhau",
+    cmpSub: "Chênh lệch tuyệt đối = {diff} · Tỷ lệ thay đổi = {pct}%",
+    rateNote: "Số tiền gốc ± tỷ lệ(%) → Số tiền áp dụng · Tổng số tiền",
+    labelBaseAmount: "Số tiền gốc", labelBaseAmount2: "Số tiền gốc", labelRatePct: "Tỷ lệ (%)",
+    labelApplyDir: "Hướng áp dụng", dirAdd: "Cộng (+)", dirSub: "Trừ (−)",
+    wordAdd: "Cộng", wordSub: "Trừ", wordSaving: "Giảm", wordNoChange: "Không thay đổi",
+    err_rate_input: "Vui lòng nhập số tiền gốc và tỷ lệ.",
+    rateSub: "Số tiền {dir} = {applied}<br>Số tiền gốc {base} {sign} {rateVal}% = {result}",
+    tgtSegAmount: "Số tiền mục tiêu", tgtSegRate: "Tỷ lệ cần thiết",
+    labelTargetRate: "Tỷ lệ mục tiêu (%)", tgtDirSub: "Giảm (trừ)",
+    labelCurrentAmount: "Số tiền hiện tại",
+    err_tgt_input1: "Vui lòng nhập số tiền gốc và tỷ lệ mục tiêu.",
+    tgtSubAmount: "Số tiền {dir} = {adjust}<br>Số tiền mục tiêu = Số tiền gốc {base} {sign} {rateVal}% = {goal}",
+    err_tgt_input2: "Vui lòng nhập số tiền hiện tại và số tiền mục tiêu.",
+    err_tgt_zero: "Không thể tính khi số tiền hiện tại bằng 0.",
+    tgtRateSub: "Số tiền chênh lệch = {diff}<br>Số tiền hiện tại {current} → Số tiền mục tiêu {goal} cần tỷ lệ {dir} {rate}%",
+
+    t3Title: "Nội suy tuyến tính",
+    grpLabel1: "Điểm chuẩn 1", grpLabel2: "Điểm chuẩn 2", grpLabelTarget: "Điểm cần tính",
+    err_interp_all: "Vui lòng nhập đầy đủ giá trị A, B, C, D, X.",
+    err_interp_eq: "Không thể tính khi giá trị A và C bằng nhau.",
+    interpSub: "Nội suy tuyến tính tại X={X} trong khoảng (A={A}, B={B}) ↔ (C={C}, D={D})",
+
+    t4Title: "Tính tỷ lệ thức (Nhân chéo)",
+    t4Formula: "A : B = C : D &nbsp;(A × D = B × C) &nbsp; (Nhập 3 trong 4 giá trị A,B,C,D để tính giá trị còn lại)",
+    err_t4_missing: "Vui lòng nhập đầy đủ giá trị {known}.",
+    err_t4_zero: "Không thể tính khi {letter} bằng 0.",
+
+    t5Title: "Tính số lượng lọc (BFU · FFU)",
+    t5Formula: "Lưu lượng cần thiết (CMH) = Thể tích phòng (m³) × Số lần thay đổi khí (lần/giờ) &nbsp;→&nbsp; Số lượng lọc = Lưu lượng cần thiết ÷ Lưu lượng mỗi bộ lọc",
+    refPanelTitle: "Tham khảo: Số lần thay đổi khí theo CLASS",
+    refColH1: "Thông gió phòng sạch (theo CLASS)", refColH2: "Thông gió điều hòa (theo sai lệch nhiệt độ)",
+    ref_100000: "20-30 lần/giờ", ref_10000: "30-40 lần/giờ", ref_1000: "50-70 lần/giờ", ref_100: "200-600 lần/giờ",
+    ref_10: "Lấp đầy FFU (trên 500 lần/giờ)",
+    ref_t1: "Trên 20 lần/giờ", ref_t2: "15 lần/giờ", ref_t3: "10 lần/giờ",
+    refNote: "Với Class 1-100, cần xem xét riêng theo tốc độ mặt lọc 0.25-0.45 m/s. Các số liệu trên chỉ mang tính tham khảo — vui lòng nhập giá trị thực tế của dự án vào ô bên dưới.",
+    volMethodLabel: "Cách nhập thể tích phòng",
+    volMethod1: "Chiều rộng·dài + Chiều cao trần", volMethod2: "Diện tích (m²) + Chiều cao trần", volMethod3: "Nhập trực tiếp thể tích (m³)",
+    fgTitleWH: "Chiều rộng · Chiều dài · Chiều cao trần", labelWidthM: "Chiều rộng (m)", labelLengthM: "Chiều dài (m)", labelCeilingM: "Chiều cao trần (m)",
+    fgTitleAH: "Diện tích · Chiều cao trần", labelAreaM2: "Diện tích (m²)",
+    fgTitleV: "Nhập trực tiếp thể tích", labelVolumeM3: "Thể tích (m³)",
+    fgTitleACH: "Số lần thay đổi khí", labelACH: "ACH (lần/giờ)",
+    fgTitleFilterFlow: "Lưu lượng mỗi bộ lọc",
+    err_vol: "Vui lòng kiểm tra giá trị nhập để tính thể tích phòng.",
+    err_ach: "Vui lòng nhập số lần thay đổi khí (ACH).",
+    err_filterFlow: "Vui lòng nhập lưu lượng mỗi bộ lọc.",
+    t5Sub: "Thể tích phòng = {volume} m³<br>Lưu lượng cần thiết = Thể tích × ACH = {volume} × {ach} = {required} CMH<br>Lưu lượng mỗi bộ lọc = {flowVal} {unit} (quy đổi {flowCMH} CMH)<br>Số lượng tính được = {required} ÷ {flowCMH} = {qtyExact} → làm tròn lên {qty} bộ",
+    unitDae: "bộ"
+  }
+};
+
+function t(key){
+  return (I18N[currentLang] && I18N[currentLang][key] !== undefined) ? I18N[currentLang][key] : (I18N.ko[key] !== undefined ? I18N.ko[key] : key);
+}
+function tf(key, vars){
+  let str = t(key);
+  if(vars){
+    Object.keys(vars).forEach(k=>{ str = str.split('{'+k+'}').join(vars[k]); });
+  }
+  return str;
+}
+
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.innerHTML = t(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{
+    el.placeholder = t(el.dataset.i18nPh);
+  });
+}
+
+document.querySelectorAll('.lang-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentLang = btn.dataset.lang;
+    document.documentElement.lang = currentLang;
+    applyStaticI18n();
+    document.querySelectorAll('.result.show').forEach(r=>r.classList.remove('show'));
+  });
+});
+applyStaticI18n();
+
 /* ---------- Tab switching ---------- */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
@@ -782,12 +1119,12 @@ function calcQVA(){
     const v = parseFloat(document.getElementById('vValue').value);
     const a = areaFromInputs();
     if(a === null || isNaN(v)){
-      showResult1('입력값을 확인해 주세요 (V, A).', true); return;
+      showResult1(t('err_qva_va'), true); return;
     }
     const qcms = a * v;
     const cmm = qcms*60, cmh = qcms*3600;
     showResult1(`Q = ${cmm.toFixed(2)} CMM &nbsp;/&nbsp; ${cmh.toFixed(1)} CMH`,
-      false, `A = ${a.toFixed(6)} m² · V = ${v} m/s 로 계산`);
+      false, tf('qvaSubQ', {a: a.toFixed(6), v: v}));
   }
 
   else if(target1 === 'V'){
@@ -795,12 +1132,12 @@ function calcQVA(){
     const qVal = parseFloat(document.getElementById('qValue').value);
     const a = areaFromInputs();
     if(a === null || isNaN(qVal) || a === 0){
-      showResult1('입력값을 확인해 주세요 (Q, A). A는 0이 될 수 없습니다.', true); return;
+      showResult1(t('err_qva_qa'), true); return;
     }
     const qcms = qToCMS(qVal, qUnit);
     const v = qcms / a;
     showResult1(`V = ${v.toFixed(3)} m/s`,
-      false, `Q = ${qVal} ${qUnit} · A = ${a.toFixed(6)} m² 로 계산`);
+      false, tf('qvaSubV', {q: qVal, unit: qUnit, a: a.toFixed(6)}));
   }
 
   else if(target1 === 'A'){
@@ -808,19 +1145,19 @@ function calcQVA(){
     const qVal = parseFloat(document.getElementById('qValue').value);
     const v = parseFloat(document.getElementById('vValue').value);
     if(isNaN(qVal) || isNaN(v) || v === 0){
-      showResult1('입력값을 확인해 주세요 (Q, V). V는 0이 될 수 없습니다.', true); return;
+      showResult1(t('err_qva_qv'), true); return;
     }
     const qcms = qToCMS(qVal, qUnit);
     const a = qcms / v;
     const diameter = Math.sqrt(4*a/Math.PI) * 1000;
     showResult1(`A = ${a.toFixed(6)} m² &nbsp;(${(a*1000000).toFixed(1)} mm²)`,
       false,
-      `Q = ${qVal} ${qUnit} · V = ${v} m/s 로 계산<br>` +
-      `원형 환산 시 지름 ≈ ${diameter.toFixed(1)} mm<br>` +
-      `사각형 환산: 한 변을 알면 아래에서 나머지 변을 확인하세요.` +
+      tf('qvaSubA1', {q: qVal, unit: qUnit, v: v}) + '<br>' +
+      tf('qvaSubA2', {d: diameter.toFixed(1)}) + '<br>' +
+      t('qvaSubA3') +
       `<div class="back-convert"><div class="row">` +
-      `<div class="field"><label>한 변 (mm)</label><input type="number" id="backSide" oninput="backConvert(${a})" placeholder="예: 600"></div>` +
-      `<div class="field"><label>나머지 변 (mm)</label><input type="number" id="backSideResult" disabled></div>` +
+      `<div class="field"><label>${t('labelOneSide')}</label><input type="number" id="backSide" oninput="backConvert(${a})" placeholder="${t('ph600')}"></div>` +
+      `<div class="field"><label>${t('labelOtherSide')}</label><input type="number" id="backSideResult" disabled></div>` +
       `</div></div>`
     );
   }
@@ -838,7 +1175,7 @@ function showResult1(mainHtml, isError, subHtml){
   const el = document.getElementById('result1');
   el.classList.toggle('error', !!isError);
   el.classList.add('show');
-  el.innerHTML = `<div class="result-label">${isError? 'ERROR' : 'RESULT'}</div>` +
+  el.innerHTML = `<div class="result-label">${isError? '⚠️ ERROR' : '✅ RESULT'}</div>` +
     `<div class="result-value">${mainHtml}</div>` +
     (subHtml ? `<div class="result-sub">${subHtml}</div>` : '');
 }
@@ -867,12 +1204,12 @@ function calcCompare(){
 
   if(isNaN(a) || isNaN(b)){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A, B 값을 입력해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_cmp_input')}</div>`;
     return;
   }
   if(a === 0){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">기준값(A)이 0이면 계산할 수 없습니다.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_cmp_zero')}</div>`;
     return;
   }
   el.classList.remove('error');
@@ -881,14 +1218,14 @@ function calcCompare(){
   const absDiff = Math.abs(diff).toFixed(1);
   const pctAbs = Math.abs(pct).toFixed(1);
   let msg;
-  if(diff > 0) msg = `B는 A 대비 <span style="color:var(--amber)">${pctAbs}% 높음</span>`;
-  else if(diff < 0) msg = `B는 A 대비 <span style="color:var(--amber)">${pctAbs}% 낮음</span>`;
-  else msg = `A와 B가 동일합니다`;
+  if(diff > 0) msg = `<span style="color:var(--amber)">${tf('cmpHigh', {pct: pctAbs})}</span>`;
+  else if(diff < 0) msg = `<span style="color:var(--amber)">${tf('cmpLow', {pct: pctAbs})}</span>`;
+  else msg = t('cmpEqual');
 
   el.classList.add('show');
-  el.innerHTML = `<div class="result-label">RESULT</div>` +
+  el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
     `<div class="result-value">${diff>=0?'+':'−'}${absDiff}</div>` +
-    `<div class="result-sub">${msg}<br>절대값 차이 = ${absDiff} · 차이율 = ${diff>=0?'+':'−'}${pctAbs}%</div>`;
+    `<div class="result-sub">${msg}<br>${tf('cmpSub', {diff: absDiff, pct: (diff>=0?'+':'−')+pctAbs})}</div>`;
 }
 
 /* ---------- ② 요율 적용 ---------- */
@@ -901,19 +1238,19 @@ function calcRateApply(){
 
   if(isNaN(base) || isNaN(rateVal)){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">기준금액, 요율 값을 입력해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_rate_input')}</div>`;
     return;
   }
 
   const rate = rateVal/100;
   const applied = base * rate;
   const result = (dir === 'add') ? base + applied : base - applied;
-  const dirLabel = (dir === 'add') ? '가산' : '차감';
+  const dirLabel = (dir === 'add') ? t('wordAdd') : t('wordSub');
 
   el.classList.add('show');
-  el.innerHTML = `<div class="result-label">RESULT</div>` +
+  el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
     `<div class="result-value">${fmtMoney(result)}</div>` +
-    `<div class="result-sub">${dirLabel} 금액 = ${fmtMoney(applied)}<br>기준금액 ${fmtMoney(base)} ${dir==='add'?'+':'−'} ${rateVal}% = ${fmtMoney(result)}</div>`;
+    `<div class="result-sub">${tf('rateSub', {dir: dirLabel, applied: fmtMoney(applied), base: fmtMoney(base), sign: (dir==='add'?'+':'−'), rateVal: rateVal, result: fmtMoney(result)})}</div>`;
 }
 
 /* ---------- ③ 목표 금액 역산 ---------- */
@@ -939,39 +1276,39 @@ function calcTarget(){
     const dir = document.querySelector('input[name="tgtDir"]:checked').value;
     if(isNaN(base) || isNaN(rateVal)){
       el.classList.add('show','error');
-      el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">기준 금액, 목표 요율 값을 입력해 주세요.</div>`;
+      el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_tgt_input1')}</div>`;
       return;
     }
     const rate = rateVal/100;
     const adjust = base * rate;
     const goal = (dir === 'sub') ? base - adjust : base + adjust;
-    const dirLabel = (dir === 'sub') ? '절감' : '가산';
+    const dirLabel = (dir === 'sub') ? t('wordSaving') : t('wordAdd');
 
     el.classList.add('show');
-    el.innerHTML = `<div class="result-label">RESULT</div>` +
+    el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
       `<div class="result-value">${fmtMoney(goal)}</div>` +
-      `<div class="result-sub">${dirLabel} 금액 = ${fmtMoney(adjust)}<br>목표 금액 = 기준금액 ${fmtMoney(base)} ${dir==='sub'?'−':'+'} ${rateVal}% = ${fmtMoney(goal)}</div>`;
+      `<div class="result-sub">${tf('tgtSubAmount', {dir: dirLabel, adjust: fmtMoney(adjust), base: fmtMoney(base), sign: (dir==='sub'?'−':'+'), rateVal: rateVal, goal: fmtMoney(goal)})}</div>`;
   } else {
     const current = parseFloat(document.getElementById('tgtCurrent').value);
     const goal = parseFloat(document.getElementById('tgtGoal').value);
     if(isNaN(current) || isNaN(goal)){
       el.classList.add('show','error');
-      el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">현재 금액, 목표 금액 값을 입력해 주세요.</div>`;
+      el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_tgt_input2')}</div>`;
       return;
     }
     if(current === 0){
       el.classList.add('show','error');
-      el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">현재 금액이 0이면 계산할 수 없습니다.</div>`;
+      el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_tgt_zero')}</div>`;
       return;
     }
     const diff = goal - current;
     const rate = Math.abs(diff) / current * 100;
-    const dirLabel = diff < 0 ? '절감' : (diff > 0 ? '가산' : '변화 없음');
+    const dirLabel = diff < 0 ? t('wordSaving') : (diff > 0 ? t('wordAdd') : t('wordNoChange'));
 
     el.classList.add('show');
-    el.innerHTML = `<div class="result-label">RESULT</div>` +
+    el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
       `<div class="result-value">${rate.toFixed(2)}% (${dirLabel})</div>` +
-      `<div class="result-sub">차이 금액 = ${fmtMoney(Math.abs(diff))}<br>현재 금액 ${fmtMoney(current)} → 목표 금액 ${fmtMoney(goal)} 필요 ${dirLabel}률 ${rate.toFixed(2)}%</div>`;
+      `<div class="result-sub">${tf('tgtRateSub', {diff: fmtMoney(Math.abs(diff)), current: fmtMoney(current), goal: fmtMoney(goal), dir: dirLabel, rate: rate.toFixed(2)})}</div>`;
   }
 }
 
@@ -987,20 +1324,20 @@ function calcInterp(){
 
   if([A,B,C,D,X].some(v=>isNaN(v))){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A, B, C, D, X 값을 모두 입력해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_interp_all')}</div>`;
     return;
   }
   if(C - A === 0){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A값과 C값이 같으면 계산할 수 없습니다.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_interp_eq')}</div>`;
     return;
   }
   el.classList.remove('error');
   const Y = B + (X - A) * (D - B) / (C - A);
   el.classList.add('show');
-  el.innerHTML = `<div class="result-label">RESULT</div>` +
+  el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
     `<div class="result-value">Y = ${Y.toFixed(3)}</div>` +
-    `<div class="result-sub">(A=${A}, B=${B}) ↔ (C=${C}, D=${D}) 구간에서 X=${X} 지점 선형보간</div>`;
+    `<div class="result-sub">${tf('interpSub', {A: A, B: B, C: C, D: D, X: X})}</div>`;
 }
 
 /* ---------- TAB 4 logic (교차곱) ---------- */
@@ -1046,32 +1383,32 @@ function calcCross(){
   const missingInput = known.find(k => isNaN(vals[k]));
   if(missingInput){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">${known.join(', ')} 값을 모두 입력해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${tf('err_t4_missing', {known: known.join(', ')})}</div>`;
     return;
   }
 
   let result, formulaText;
   if(target4 === 'A'){
-    if(vals.D === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">D값이 0이면 계산할 수 없습니다.</div>`; return; }
+    if(vals.D === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${tf('err_t4_zero', {letter: 'D'})}</div>`; return; }
     result = (vals.B * vals.C) / vals.D;
     formulaText = `A = B × C ÷ D = ${vals.B} × ${vals.C} ÷ ${vals.D}`;
   } else if(target4 === 'B'){
-    if(vals.C === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">C값이 0이면 계산할 수 없습니다.</div>`; return; }
+    if(vals.C === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${tf('err_t4_zero', {letter: 'C'})}</div>`; return; }
     result = (vals.A * vals.D) / vals.C;
     formulaText = `B = A × D ÷ C = ${vals.A} × ${vals.D} ÷ ${vals.C}`;
   } else if(target4 === 'C'){
-    if(vals.B === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">B값이 0이면 계산할 수 없습니다.</div>`; return; }
+    if(vals.B === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${tf('err_t4_zero', {letter: 'B'})}</div>`; return; }
     result = (vals.A * vals.D) / vals.B;
     formulaText = `C = A × D ÷ B = ${vals.A} × ${vals.D} ÷ ${vals.B}`;
   } else {
-    if(vals.A === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">A값이 0이면 계산할 수 없습니다.</div>`; return; }
+    if(vals.A === 0){ el.classList.add('show','error'); el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${tf('err_t4_zero', {letter: 'A'})}</div>`; return; }
     result = (vals.B * vals.C) / vals.A;
     formulaText = `D = B × C ÷ A = ${vals.B} × ${vals.C} ÷ ${vals.A}`;
   }
 
   el.classList.remove('error');
   el.classList.add('show');
-  el.innerHTML = `<div class="result-label">RESULT</div>` +
+  el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
     `<div class="result-value">${target4} = ${result.toFixed(4).replace(/\.?0+$/,'')}</div>` +
     `<div class="result-sub">${formulaText}</div>`;
 }
@@ -1117,14 +1454,14 @@ function calcFilterQty(){
   const volume = getRoomVolume();
   if(volume === null || volume <= 0){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">룸 체적 계산을 위한 입력값을 확인해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_vol')}</div>`;
     return;
   }
 
   const ach = parseFloat(document.getElementById('ach').value);
   if(isNaN(ach) || ach <= 0){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">환기횟수(ACH)를 입력해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_ach')}</div>`;
     return;
   }
 
@@ -1132,7 +1469,7 @@ function calcFilterQty(){
   const flowVal = parseFloat(document.getElementById('filterFlow').value);
   if(isNaN(flowVal) || flowVal <= 0){
     el.classList.add('show','error');
-    el.innerHTML = `<div class="result-label">ERROR</div><div class="result-value">필터 1대당 풍량을 입력해 주세요.</div>`;
+    el.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('err_filterFlow')}</div>`;
     return;
   }
   const flowCMH = (unit === 'CMM') ? flowVal * 60 : flowVal;
@@ -1142,13 +1479,19 @@ function calcFilterQty(){
   const qty = Math.ceil(qtyExact);
 
   el.classList.add('show');
-  el.innerHTML = `<div class="result-label">RESULT</div>` +
-    `<div class="result-value">${qty} 대</div>` +
+  el.innerHTML = `<div class="result-label">✅ RESULT</div>` +
+    `<div class="result-value">${qty} ${t('unitDae')}</div>` +
     `<div class="result-sub">` +
-      `룸 체적 = ${volume.toFixed(2)} m³<br>` +
-      `필요풍량 = 체적 × ACH = ${volume.toFixed(2)} × ${ach} = ${requiredCMH.toFixed(1)} CMH<br>` +
-      `필터 1대당 풍량 = ${flowVal} ${unit} (${flowCMH.toFixed(1)} CMH 환산)<br>` +
-      `산출 대수 = ${requiredCMH.toFixed(1)} ÷ ${flowCMH.toFixed(1)} = ${qtyExact.toFixed(2)} → 올림 ${qty}대` +
+      tf('t5Sub', {
+        volume: volume.toFixed(2),
+        ach: ach,
+        required: requiredCMH.toFixed(1),
+        flowVal: flowVal,
+        unit: unit,
+        flowCMH: flowCMH.toFixed(1),
+        qtyExact: qtyExact.toFixed(2),
+        qty: qty
+      }) +
     `</div>`;
 }
 </script>
