@@ -110,15 +110,16 @@
     border: none;
     color: var(--muted);
     font-family: var(--mono);
-    font-size: 10px;
-    letter-spacing: 0.03em;
-    padding: 6px 8px;
+    font-size: 15px;
+    line-height: 1;
+    padding: 6px 7px;
     cursor: pointer;
     white-space: nowrap;
+    filter: grayscale(60%) opacity(0.65);
   }
-  .lang-btn.active{ background: var(--panel-2); color: var(--cyan); font-weight: 700; }
+  .lang-btn.active{ background: var(--panel-2); filter: none; }
   @media (max-width: 480px){
-    .lang-btn{ font-size: 9px; padding: 5px 6px; }
+    .lang-btn{ font-size: 14px; padding: 5px 6px; }
   }
 
   /* Tabs styled like a drawing index */
@@ -410,19 +411,19 @@
       <h1><span data-i18n="appTitle">실무계산기</span><span class="rev-tag">· REV.02</span></h1>
     </div>
     <div class="lang-switch">
-      <button class="lang-btn active" data-lang="ko">🇰🇷 KOR</button>
-      <button class="lang-btn" data-lang="en">🇺🇸 ENG</button>
-      <button class="lang-btn" data-lang="vi">🇻🇳 VIE</button>
+      <button class="lang-btn active" data-lang="ko" title="한국어">🇰🇷</button>
+      <button class="lang-btn" data-lang="en" title="English">🇺🇸</button>
+      <button class="lang-btn" data-lang="vi" title="Tiếng Việt">🇻🇳</button>
     </div>
     <div class="logo-badge"><img src="data:image/jpeg;base64,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" alt="SHINSUNG E&amp;G"></div>
   </header>
 
   <div class="tabs">
-    <button class="tab-btn active" data-tab="t1"><span class="num">01</span> 💨 <span data-i18n="tab1">풍량·풍속·면적</span></button>
-    <button class="tab-btn" data-tab="t5"><span class="num">02</span> 🌀 <span data-i18n="tab2">필터 수량 산출</span></button>
-    <button class="tab-btn" data-tab="t3"><span class="num">03</span> 📈 <span data-i18n="tab3">선형보간</span></button>
-    <button class="tab-btn" data-tab="t2"><span class="num">04</span> 💰 <span data-i18n="tab4">견적 계산</span></button>
-    <button class="tab-btn" data-tab="t4"><span class="num">05</span> ⚖️ <span data-i18n="tab5">교차곱 계산</span></button>
+    <button class="tab-btn active" data-tab="t1"><span class="num">01</span><span data-i18n="tab1">풍량·풍속·면적</span></button>
+    <button class="tab-btn" data-tab="t5"><span class="num">02</span><span data-i18n="tab2">필터 수량 산출</span></button>
+    <button class="tab-btn" data-tab="t3"><span class="num">03</span><span data-i18n="tab3">선형보간</span></button>
+    <button class="tab-btn" data-tab="t2"><span class="num">04</span><span data-i18n="tab4">견적 계산</span></button>
+    <button class="tab-btn" data-tab="t4"><span class="num">05</span><span data-i18n="tab5">교차곱 계산</span></button>
   </div>
 
   <!-- ===================== TAB 1 : Q V A ===================== -->
