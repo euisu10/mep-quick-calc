@@ -155,6 +155,8 @@
     color: var(--ink);
   }
   .tab-btn:hover:not(.active){ color: var(--ink); }
+  .tab-btn:disabled{ opacity: 0.4; cursor: not-allowed; }
+  .tab-btn:disabled:hover{ color: var(--muted); }
   @media (max-width: 400px){
     .tab-btn{ font-size: 10px; padding: 8px 2px; }
   }
@@ -430,6 +432,56 @@
     margin: -8px 0 16px;
     line-height: 1.6;
   }
+
+  /* UT 관경 계산 (tab 6) */
+  input.is-default{ color: var(--muted); }
+  .ut-note{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+  .ut-note.warn{ color: var(--amber); }
+  .conv-hint{
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .pipe-table-wrap{ overflow-x: auto; margin-top: 4px; }
+  table.pipe-table{
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    white-space: nowrap;
+  }
+  table.pipe-table th, table.pipe-table td{
+    padding: 4px 7px;
+    text-align: right;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+  }
+  table.pipe-table th{ color: var(--cyan); text-align: right; }
+  table.pipe-table td:first-child, table.pipe-table th:first-child{ text-align: left; color: var(--ink); }
+  .ref-panel details{ margin-top: 10px; }
+  .ref-panel summary{
+    cursor: pointer;
+    color: var(--cyan);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Header·Branch 관경 (tab 7) */
+  .hb-branch-card{
+    border: 1px solid var(--line);
+    background: rgba(255,255,255,0.02);
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .hb-branch-card .field-group-title{ margin-bottom: 8px; }
+  .hb-diagram-svg{ width: 100%; height: auto; display: block; }
 </style>
 </head>
 <body>
@@ -437,7 +489,7 @@
 
   <header>
     <div class="header-text">
-      <h1><span data-i18n="appTitle">실무계산기</span><span class="rev-tag">· REV.02</span></h1>
+      <h1><span data-i18n="appTitle">실무계산기</span><span class="rev-tag">· REV.03</span></h1>
     </div>
     <div class="lang-switch">
       <button class="lang-btn active" data-lang="ko" title="한국어">🇰🇷</button>
@@ -450,9 +502,11 @@
   <div class="tabs">
     <button class="tab-btn active" data-tab="t1"><span class="num">01</span><span data-i18n="tab1">풍량·풍속·면적</span></button>
     <button class="tab-btn" data-tab="t5"><span class="num">02</span><span data-i18n="tab2">필터 수량 산출</span></button>
-    <button class="tab-btn" data-tab="t3"><span class="num">03</span><span data-i18n="tab3">선형보간</span></button>
-    <button class="tab-btn" data-tab="t2"><span class="num">04</span><span data-i18n="tab4">견적 계산</span></button>
-    <button class="tab-btn" data-tab="t4"><span class="num">05</span><span data-i18n="tab5">교차곱 계산</span></button>
+    <button class="tab-btn" data-tab="t6"><span class="num">03</span><span data-i18n="tab6">UT 관경 계산</span></button>
+    <button class="tab-btn" data-tab="t7"><span class="num">04</span><span data-i18n="tab7">Header·Branch 관경</span></button>
+    <button class="tab-btn" data-tab="t2"><span class="num">05</span><span data-i18n="tab4">견적 계산</span></button>
+    <button class="tab-btn" data-tab="t3"><span class="num">06</span><span data-i18n="tab3">선형보간</span></button>
+    <button class="tab-btn" data-tab="t4"><span class="num">07</span><span data-i18n="tab5">교차곱 계산</span></button>
   </div>
 
   <!-- ===================== TAB 1 : Q V A ===================== -->
@@ -761,6 +815,160 @@
     <div class="result" id="result5"></div>
   </section>
 
+  <!-- ===================== TAB 6 : UT 관경 계산 ===================== -->
+  <section class="panel" id="t6">
+    <h2>🧵 <span data-i18n="t6Title">UT 관경 계산</span></h2>
+    <div class="formula" data-i18n="t6Formula">
+      가스(압력보정) N = Q×1/(1+P)×293/273 &nbsp;|&nbsp; 가스(고정계수) N = Q×600/760×273/293 &nbsp;|&nbsp; 공통 D = √(4N/(π×V×3600))×1000
+    </div>
+
+    <div class="seg-label" data-i18n="t6SelectLabel">UT 종류 선택</div>
+    <div class="field-group">
+      <select id="utSelect" onchange="onUtChange()"></select>
+    </div>
+
+    <div class="field-group" id="ut-note-box" style="display:none;">
+      <div class="field-group-title">📌 <span data-i18n="t6NoteTitle">부연 설명</span></div>
+      <div class="ut-note" id="ut-note-text"></div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title">💧 <span data-i18n="t6QTitle">용량 (Q)</span></div>
+      <div class="row">
+        <div class="field"><label>LPM</label><input type="number" id="utLpm" oninput="syncFromLpm()" placeholder="3442"></div>
+        <div class="field"><label>M³/HR</label><input type="number" id="utM3hr" oninput="syncFromM3hr()" placeholder="206.5"></div>
+        <div class="field" id="ut-m3day-field" style="display:none;"><label>M³/DAY</label><input type="number" id="utM3day" oninput="syncFromM3day()" placeholder="8.64"></div>
+        <div class="field" id="ut-tonday-field" style="display:none;"><label>TON/DAY</label><input type="number" id="utTonday" oninput="syncFromTonday()" placeholder="8.64"></div>
+      </div>
+      <div class="conv-hint" data-i18n="t6ConvHint">LPM · M³/HR · M³/DAY · TON/DAY 중 하나만 입력해도 나머지가 자동 환산됩니다. (TON/DAY는 물 비중 1 가정)</div>
+    </div>
+
+    <div class="field-group" id="ut-pressure-field" style="display:none;">
+      <div class="field-group-title">🧯 <span data-i18n="t6PTitle">압력 (P, kgf/㎠·G)</span></div>
+      <div class="row"><div class="field"><input type="number" id="utPressure" oninput="clearDefaultStyle(this)"></div></div>
+    </div>
+
+    <div class="field-group">
+      <div class="field-group-title">🌬️ <span data-i18n="t6VTitle">유속 (V, m/s)</span></div>
+      <div class="row"><div class="field"><input type="number" id="utVelocity" oninput="clearDefaultStyle(this)"></div></div>
+      <div class="conv-hint" data-i18n="t6VHint">회색 숫자는 기본 추천값입니다. 직접 입력해 값을 바꿀 수 있습니다.</div>
+    </div>
+
+    <button class="calc-btn" onclick="calcUT()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
+    <div class="result" id="result6"></div>
+
+    <div class="field-group" id="ut-pipe-select-group" style="display:none;">
+      <div class="field-group-title">🔩 <span data-i18n="t6PipeTitle">최종 배관 규격 선택 (내경 기준 참조)</span></div>
+      <div class="row">
+        <div class="field">
+          <label data-i18n="t6MatLabel">재질</label>
+          <select id="utPipeMat" onchange="recommendPipe()">
+            <option value="SPP" data-i18n="t6MatSPP">일반배관 (SPP)</option>
+            <option value="STS" data-i18n="t6MatSTS">스테인레스 (STSXT)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-i18n="t6SchLabel">SCH</label>
+          <select id="utPipeSch" onchange="recommendPipe()">
+            <option value="sgp" selected>SGP</option>
+            <option value="sch40">SCH40</option>
+            <option value="sch20">SCH20</option>
+            <option value="sch80">SCH80</option>
+          </select>
+        </div>
+      </div>
+      <div class="ach-preview empty" id="utPipeResult" data-i18n="t6PipePlaceholder" style="margin-top:10px;">용량·유속 계산 후 표시됩니다.</div>
+    </div>
+
+    <div class="ref-panel">
+      <div class="ref-panel-title">📋 <span data-i18n="t6RefTitle">참조 : 배관 호칭경 · 내경/외경 (SCH별)</span></div>
+      <div class="pipe-table-wrap">
+        <table class="pipe-table" id="pipeIdRefTable"></table>
+      </div>
+      <div class="ref-note" data-i18n="t6RefNote">위 표는 첨부하신 자료(일반배관 SPP / 스테인레스배관 STSXT 두께·내경·무게) 기준이며, 계산된 관경(D, 내경 기준)보다 큰 최소 규격을 추천값으로 표시합니다.</div>
+      <details>
+        <summary data-i18n="t6DetailsSummary">PIPE 기준 (호칭지름 ↔ 바깥지름 ↔ inch) 더 보기</summary>
+        <div class="pipe-table-wrap">
+          <table class="pipe-table" id="pipeOdRefTable"></table>
+        </div>
+        <div class="ref-note" data-i18n="t6OdNote">TUBE는 외경이 inch 기준. ANSI CLASS 플랜지는 평방인치당 150파운드 압력을 PSI로 표시하며, 대략 #150 ≈ 10K, #300 ≈ 20K, #600 ≈ 40K로 통용됩니다.</div>
+      </details>
+    </div>
+  </section>
+
+  </section>
+
+  <!-- ===================== TAB 7 : Header·Branch 관경 ===================== -->
+  <section class="panel" id="t7">
+    <h2>🧩 <span data-i18n="tab7">Header·Branch 관경</span></h2>
+    <div class="formula" data-i18n="t7Formula">Q = A×V &nbsp;|&nbsp; Header n = Branch n ~ Branch(마지막) 누적유량 &nbsp;|&nbsp; D = √(4A/π)×1000</div>
+
+    <div class="ref-panel">
+      <div class="ref-panel-title">📌 <span data-i18n="t7HowTitle">사용 방법</span></div>
+      <div class="ref-note" data-i18n="t7HowNote" style="margin-top:0;">① 분기(Branch) 개수를 고르고 각 Branch의 유량을 입력하세요 (LPM·M³/HR·Kcal/h·RT 중 하나만 입력해도 자동 환산). ② Header는 가장 먼 Branch부터 소스 방향으로 유량이 누적됩니다 (Header1 = 전체 합, 마지막 Header = 마지막 Branch만). ③ 유속(V) 기본값은 2 m/s이며, 특별한 요구사항이 없으면 이 값을 기준으로 사용하세요.</div>
+    </div>
+
+    <div class="seg-label" data-i18n="t7CountLabel">Branch 개수</div>
+    <div class="field-group">
+      <div class="row">
+        <div class="field">
+          <select id="hbCount" onchange="generateHbRows()">
+            <option value="2">2</option><option value="3">3</option>
+            <option value="4" selected>4</option><option value="5">5</option>
+            <option value="6">6</option><option value="7">7</option>
+            <option value="8">8</option><option value="9">9</option>
+            <option value="10">10</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-i18n="t7MatLabel">재질</label>
+          <select id="hbMat">
+            <option value="SPP" data-i18n="t6MatSPP">일반배관 (SPP)</option>
+            <option value="STS" data-i18n="t6MatSTS">스테인레스 (STSXT)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label data-i18n="t6SchLabel">SCH</label>
+          <select id="hbSch">
+            <option value="sgp" selected>SGP</option>
+            <option value="sch40">SCH40</option>
+            <option value="sch20">SCH20</option>
+            <option value="sch80">SCH80</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="seg-label" data-i18n="t7BranchLabel">Branch별 유량 · 유속 입력</div>
+    <div id="hbBranchList"></div>
+    <div class="conv-hint" data-i18n="t7FlowHint" style="margin:-6px 0 14px;">LPM · M³/HR · Kcal/h · RT 중 하나만 입력해도 나머지가 자동 환산됩니다. (LPM = Kcal/h ÷ 300, RT = Kcal/h ÷ 3024, 냉각수 ΔT 5℃ 기준 개산식)</div>
+
+    <div class="field-group">
+      <div class="field-group-title">🌬️ <span data-i18n="t7HeaderVTitle">Header 공통 유속 (V, m/s)</span></div>
+      <div class="row"><div class="field"><input type="number" id="hbHeaderV" class="is-default" value="2" oninput="clearDefaultStyle(this)"></div></div>
+      <div class="conv-hint" data-i18n="t7VHint">회색 숫자는 기본값(2 m/s)입니다. 특별한 요구사항이 없으면 이 기준을 사용하고, 필요 시 직접 입력해 변경할 수 있습니다.</div>
+    </div>
+
+    <button class="calc-btn" onclick="calcHB()">🧮 <span data-i18n="btnCalc">계산하기</span></button>
+    <div class="result" id="hbResult"></div>
+
+    <div id="hbResultTables" style="display:none;">
+      <div class="field-group">
+        <div class="field-group-title">🔹 <span data-i18n="t7BranchResultTitle">Branch 계산 결과</span></div>
+        <div class="pipe-table-wrap"><table class="pipe-table" id="hbBranchTable"></table></div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-title">🔷 <span data-i18n="t7HeaderResultTitle">Header 계산 결과 (누적)</span></div>
+        <div class="pipe-table-wrap"><table class="pipe-table" id="hbHeaderTable"></table></div>
+      </div>
+      <div class="field-group">
+        <div class="field-group-title">🗺️ <span data-i18n="t7DiagramTitle">배관 계통도</span></div>
+        <div id="hbDiagramWrap" class="pipe-table-wrap"></div>
+      </div>
+      <div class="ref-note" data-i18n="t7ResultNote">추천 배관 규격은 계산된 관경(D)보다 큰 최소 표준 규격입니다. 프로젝트 기준에 따라 위 "여유%"를 참고해 필요 시 한 단계 더 큰 규격으로 조정하세요.</div>
+    </div>
+  </section>
+
   <footer>🛠️ <span data-i18n="footerText">MEP QUICK CALC — 사내 실무 검토용 계산 도구</span></footer>
   <div class="signature">SEOL ES · 2026</div>
 </div>
@@ -772,7 +980,7 @@ let currentLang = 'ko';
 const I18N = {
   ko: {
     appTitle: "실무계산기",
-    tab1: "풍량·풍속·면적", tab2: "필터 수량 산출", tab3: "선형보간", tab4: "견적 계산", tab5: "교차곱 계산",
+    tab1: "풍량·풍속·면적", tab2: "필터 수량 산출", tab3: "선형보간", tab4: "견적 계산", tab5: "교차곱 계산", tab6: "UT 관경 계산", tab7: "Header·Branch 관경",
     footerText: "MEP QUICK CALC — 사내 실무 검토용 계산 도구",
     btnCalc: "계산하기",
     segLabel1: "구하고자 하는 값",
@@ -861,11 +1069,73 @@ const I18N = {
     err_ach: "환기횟수(ACH)를 입력해 주세요.",
     err_filterFlow: "필터 1대당 풍량을 입력해 주세요.",
     t5Sub: "룸 체적 = {volume} m³<br>필요풍량 = 체적 × ACH = {volume} × {ach} = {required} CMH<br>필터 1대당 풍량 = {flowVal} {unit} ({flowCMH} CMH 환산)<br>산출 대수 = {required} ÷ {flowCMH} = {qtyExact} → 올림 {qty}대",
-    unitDae: "대"
+    unitDae: "대",
+
+    // TAB6
+    t6Title: "UT 관경 계산",
+    t6Formula: "가스(압력보정) N = Q×1/(1+P)×293/273 &nbsp;|&nbsp; 가스(고정계수) N = Q×600/760×273/293 &nbsp;|&nbsp; 공통 D = √(4N/(π×V×3600))×1000",
+    t6SelectLabel: "UT 종류 선택",
+    t6NoteTitle: "부연 설명",
+    t6QTitle: "용량 (Q)",
+    t6ConvHint: "LPM · M³/HR · M³/DAY · TON/DAY 중 하나만 입력해도 나머지가 자동 환산됩니다. (TON/DAY는 물 비중 1 가정)",
+    t6PTitle: "압력 (P, kgf/㎠·G)",
+    t6VTitle: "유속 (V, m/s)",
+    t6VHint: "회색 숫자는 기본 추천값입니다. 직접 입력해 값을 바꿀 수 있습니다.",
+    t6PipeTitle: "최종 배관 규격 선택 (내경 기준 참조)",
+    t6MatLabel: "재질", t6SchLabel: "SCH",
+    t6MatSPP: "일반배관 (SPP)", t6MatSTS: "스테인레스 (STSXT)",
+    t6PipePlaceholder: "용량·유속 계산 후 표시됩니다.",
+    t6RefTitle: "참조 : 배관 호칭경 · 내경/외경 (SCH별)",
+    t6RefNote: "위 표는 첨부하신 자료(일반배관 SPP / 스테인레스배관 STSXT 두께·내경·무게) 기준이며, 계산된 관경(D, 내경 기준)보다 큰 최소 규격을 추천값으로 표시합니다.",
+    t6DetailsSummary: "PIPE 기준 (호칭지름 ↔ 바깥지름 ↔ inch) 더 보기",
+    t6OdNote: "TUBE는 외경이 inch 기준. ANSI CLASS 플랜지는 평방인치당 150파운드 압력을 PSI로 표시하며, 대략 #150 ≈ 10K, #300 ≈ 20K, #600 ≈ 40K로 통용됩니다.",
+    t6ColSize: "호칭경", t6ColOD: "외경mm", t6ColSGP: "SGP 내경", t6ColSCH20: "SCH20 내경", t6ColSCH40: "SCH40 내경", t6ColSCH80: "SCH80 내경",
+    t6OdColDn: "호칭지름(A/DN mm)", t6OdColInch: "inch(B)", t6OdColOd: "바깥지름mm",
+    t6ErrQV: "용량(LPM 또는 M³/HR)과 유속 값을 확인해 주세요.",
+    t6ErrP: "압력 값을 입력해 주세요.",
+    t6SubN_A: "표준상태 환산유량 N = {q} × 1/(1+{p}) × 293/273 = {n} ㎥/hr",
+    t6SubN_B: "표준상태 환산유량 N = {q} × 600/760 × 273/293 = {n} ㎥/hr",
+    t6SubD: "관경 D = √(4×N/(π×V×3600))×1000 = {d} mm",
+    t6SubWasteDay: "M³/DAY = {mday} · TON/DAY ≈ {tday} (물 비중 1 가정)",
+    t6SubWasteRule: "※ 폐수 배관은 계산된 관경보다 한 단계 위 규격으로 선정하고, 가지관 사이즈도 모두 동일하게 적용합니다.",
+    t6PipeNoMatch: "계산 관경({d}mm)에 맞는 표 상의 규격이 없습니다. 500A 이상은 별도 확인이 필요합니다.",
+    t6PipeResultMain: "{a}A ({b}) · 외경 {od}mm · 내경 {id}mm",
+    t6PipeResultSub: "계산 관경 대비 여유 {margin}%",
+    t6PipeBumpNote: " · 폐수 규정에 따라 1단계 위 규격 반영됨",
+    // TAB7
+    t7Formula: "Q = A×V &nbsp;|&nbsp; Header n = Branch n ~ Branch(마지막) 누적유량 &nbsp;|&nbsp; D = √(4A/π)×1000",
+    t7HowTitle: "사용 방법",
+    t7HowNote: "① 분기(Branch) 개수를 고르고 각 Branch의 유량을 입력하세요 (LPM·M³/HR·Kcal/h·RT 중 하나만 입력해도 자동 환산). ② Header는 가장 먼 Branch부터 소스 방향으로 유량이 누적됩니다 (Header1 = 전체 합, 마지막 Header = 마지막 Branch만). ③ 유속(V) 기본값은 2 m/s이며, 특별한 요구사항이 없으면 이 값을 기준으로 사용하세요.",
+    t7CountLabel: "Branch 개수",
+    t7MatLabel: "재질",
+    t7BranchLabel: "Branch별 유량 · 유속 입력",
+    t7FlowHint: "LPM · M³/HR · Kcal/h · RT 중 하나만 입력해도 나머지가 자동 환산됩니다. (LPM = Kcal/h ÷ 300, RT = Kcal/h ÷ 3024, 냉각수 ΔT 5℃ 기준 개산식)",
+    t7HeaderVTitle: "Header 공통 유속 (V, m/s)",
+    t7VHint: "회색 숫자는 기본값(2 m/s)입니다. 특별한 요구사항이 없으면 이 기준을 사용하고, 필요 시 직접 입력해 변경할 수 있습니다.",
+    t7BranchResultTitle: "Branch 계산 결과",
+    t7HeaderResultTitle: "Header 계산 결과 (누적)",
+    t7DiagramTitle: "배관 계통도",
+    t7ResultNote: "추천 배관 규격은 계산된 관경(D)보다 큰 최소 표준 규격입니다. 프로젝트 기준에 따라 위 \"여유%\"를 참고해 필요 시 한 단계 더 큰 규격으로 조정하세요.",
+    t7Branch: "Branch", t7Header: "Header",
+    t7ColLpm: "LPM", t7ColM3hr: "M³/HR", t7ColLhr: "L/hr", t7ColV: "V (m/s)", t7ColD: "D (mm)", t7ColPipe: "추천 규격", t7ColMargin: "여유(%)",
+    t7ErrRow: "Branch {n}의 유량·유속 값을 확인해 주세요.",
+    t7ErrHeaderV: "Header 공통 유속 값을 확인해 주세요.",
+    t7PipeNoMatch: "표 규격 범위를 벗어났습니다",
+    t7DiagSource: "소스", t7DiagEnd: "말단",
+    t7ComingSoon: "🚧 준비중입니다. Header·Branch 관경 산출 프로그램은 추후 추가될 예정입니다.",
+
+    ut_gn2: "GN2 (질소)", ut_ar: "Ar (아르곤)", ut_o2: "O2 (산소)", ut_cda: "CDA (Clean Dry Air)",
+    ut_pcw: "PCW (Process Cooling Water)", ut_cw: "CW (냉각수)", ut_di: "DI (초순수)",
+    ut_hv: "HV", ut_pv: "PV",
+    ut_drain_acid: "DRAIN(산)", ut_drain_org: "DRAIN(유기)", ut_drain_gen: "DRAIN(일반)",
+    ut_wastewater: "폐수 / 폐액",
+    utnote_pcw: "보통 1.0~2.0 m/s로 설계 반영. 배관거리·여건·여유치를 고려해 산정 필요.\n국내 별도 기준 없으면 2 m/s 적용. 안정적인 설계를 하려면 1.5 m/s도 가능.",
+    utnote_pv: "⚠ 사내 의견으로 PV 유속을 200~300 m/s 이상으로 보는 경우도 있으나 검증되지 않은 참고 의견입니다.\n기본값은 20 m/s로 두었으니 실제 프로젝트 기준에 맞게 조정하세요.",
+    utnote_wastewater: "펌프로 이송 시 유속 = 2 m/s / 자연 드레인으로 이송 시 유속 = 0.5 m/s (참고용, 아래 유속란에 직접 반영).\n배관에서 흔히 말하는 \"압력 1\"은 통상 유속 1 m/s를 의미."
   },
   en: {
     appTitle: "MEP Calculator",
-    tab1: "Airflow · Velocity · Area", tab2: "Filter Quantity", tab3: "Linear Interp.", tab4: "Estimate Calc", tab5: "Cross Ratio",
+    tab1: "Airflow · Velocity · Area", tab2: "Filter Quantity", tab3: "Linear Interp.", tab4: "Estimate Calc", tab5: "Cross Ratio", tab6: "UT Pipe Sizing", tab7: "Header·Branch Sizing",
     footerText: "MEP QUICK CALC — Internal field-review calculation tool",
     btnCalc: "Calculate",
     segLabel1: "Value to solve for",
@@ -949,11 +1219,73 @@ const I18N = {
     err_ach: "Please enter the air change rate (ACH).",
     err_filterFlow: "Please enter the airflow per filter unit.",
     t5Sub: "Room volume = {volume} m³<br>Required airflow = Volume × ACH = {volume} × {ach} = {required} CMH<br>Airflow per filter = {flowVal} {unit} (converted to {flowCMH} CMH)<br>Calculated qty = {required} ÷ {flowCMH} = {qtyExact} → rounded up to {qty} units",
-    unitDae: "units"
+    unitDae: "units",
+
+    // TAB6
+    t6Title: "UT Pipe Sizing",
+    t6Formula: "Gas (pressure-corrected) N = Q×1/(1+P)×293/273 &nbsp;|&nbsp; Gas (fixed-factor) N = Q×600/760×273/293 &nbsp;|&nbsp; Common D = √(4N/(π×V×3600))×1000",
+    t6SelectLabel: "Select UT Type",
+    t6NoteTitle: "Note",
+    t6QTitle: "Capacity (Q)",
+    t6ConvHint: "Enter any one of LPM · M³/HR · M³/DAY · TON/DAY — the rest convert automatically. (TON/DAY assumes water density = 1)",
+    t6PTitle: "Pressure (P, kgf/㎠·G)",
+    t6VTitle: "Velocity (V, m/s)",
+    t6VHint: "Grey numbers are recommended defaults. Type over them to use your own value.",
+    t6PipeTitle: "Final Pipe Selection (by inner diameter)",
+    t6MatLabel: "Material", t6SchLabel: "SCH",
+    t6MatSPP: "Standard pipe (SPP)", t6MatSTS: "Stainless (STSXT)",
+    t6PipePlaceholder: "Shown after calculating capacity/velocity.",
+    t6RefTitle: "Reference: Nominal Size · ID/OD by SCH",
+    t6RefNote: "Based on the attached data (SPP standard pipe / STSXT stainless pipe wall thickness·ID·weight). The smallest size whose ID exceeds the calculated diameter (D) is shown as the recommendation.",
+    t6DetailsSummary: "More: PIPE reference (nominal size ↔ outer diameter ↔ inch)",
+    t6OdNote: "TUBE outer diameter is in inches. ANSI CLASS flange rating is expressed as PSI per 150 lb per square inch; roughly #150 ≈ 10K, #300 ≈ 20K, #600 ≈ 40K.",
+    t6ColSize: "Nominal Size", t6ColOD: "OD mm", t6ColSGP: "SGP ID", t6ColSCH20: "SCH20 ID", t6ColSCH40: "SCH40 ID", t6ColSCH80: "SCH80 ID",
+    t6OdColDn: "Nominal Size (A/DN mm)", t6OdColInch: "inch (B)", t6OdColOd: "Outer Diameter mm",
+    t6ErrQV: "Please check the capacity (LPM or M³/HR) and velocity values.",
+    t6ErrP: "Please enter the pressure value.",
+    t6SubN_A: "Standard-state flow N = {q} × 1/(1+{p}) × 293/273 = {n} ㎥/hr",
+    t6SubN_B: "Standard-state flow N = {q} × 600/760 × 273/293 = {n} ㎥/hr",
+    t6SubD: "Pipe diameter D = √(4×N/(π×V×3600))×1000 = {d} mm",
+    t6SubWasteDay: "M³/DAY = {mday} · TON/DAY ≈ {tday} (water density = 1 assumed)",
+    t6SubWasteRule: "※ For wastewater piping, select one size larger than the calculated diameter, and apply the same size to all branch lines.",
+    t6PipeNoMatch: "No matching standard size for the calculated diameter ({d}mm). Sizes 500A and above require separate review.",
+    t6PipeResultMain: "{a}A ({b}) · OD {od}mm · ID {id}mm",
+    t6PipeResultSub: "Margin over calculated diameter: {margin}%",
+    t6PipeBumpNote: " · Bumped up one size per wastewater rule",
+    // TAB7
+    t7Formula: "Q = A×V &nbsp;|&nbsp; Header n = cumulative flow of Branch n ~ last Branch &nbsp;|&nbsp; D = √(4A/π)×1000",
+    t7HowTitle: "How to use",
+    t7HowNote: "① Choose the number of branches and enter each branch's flow (enter any one of LPM / M³/HR / Kcal/h / RT — the rest convert automatically). ② Headers accumulate flow from the farthest branch toward the source (Header 1 = total sum, the last Header = the last branch only). ③ Default velocity (V) is 2 m/s — use this unless your project specifies otherwise.",
+    t7CountLabel: "Number of branches",
+    t7MatLabel: "Material",
+    t7BranchLabel: "Per-branch flow · velocity input",
+    t7FlowHint: "Enter any one of LPM · M³/HR · Kcal/h · RT — the rest convert automatically. (LPM = Kcal/h ÷ 300, RT = Kcal/h ÷ 3024; approximate formulas assuming a 5℃ cooling-water ΔT)",
+    t7HeaderVTitle: "Common Header velocity (V, m/s)",
+    t7VHint: "Grey numbers are the default (2 m/s). Use this unless your project specifies otherwise; type over it to change.",
+    t7BranchResultTitle: "Branch results",
+    t7HeaderResultTitle: "Header results (cumulative)",
+    t7DiagramTitle: "Piping schematic",
+    t7ResultNote: "The recommended size is the smallest standard size whose ID exceeds the calculated diameter (D). Use the \"Margin %\" above and bump up a size if your project standard calls for it.",
+    t7Branch: "Branch", t7Header: "Header",
+    t7ColLpm: "LPM", t7ColM3hr: "M³/HR", t7ColLhr: "L/hr", t7ColV: "V (m/s)", t7ColD: "D (mm)", t7ColPipe: "Recommended", t7ColMargin: "Margin(%)",
+    t7ErrRow: "Please check the flow and velocity for Branch {n}.",
+    t7ErrHeaderV: "Please check the common Header velocity value.",
+    t7PipeNoMatch: "Outside the table's size range",
+    t7DiagSource: "Source", t7DiagEnd: "End",
+    t7ComingSoon: "🚧 Coming soon. The Header/Branch pipe sizing tool will be added later.",
+
+    ut_gn2: "GN2 (Nitrogen)", ut_ar: "Ar (Argon)", ut_o2: "O2 (Oxygen)", ut_cda: "CDA (Clean Dry Air)",
+    ut_pcw: "PCW (Process Cooling Water)", ut_cw: "CW (Cooling Water)", ut_di: "DI (Deionized Water)",
+    ut_hv: "HV", ut_pv: "PV",
+    ut_drain_acid: "DRAIN (Acid)", ut_drain_org: "DRAIN (Organic)", ut_drain_gen: "DRAIN (General)",
+    ut_wastewater: "Wastewater / Effluent",
+    utnote_pcw: "Typically designed at 1.0–2.0 m/s. Consider pipe length, site conditions and margin.\nUse 2 m/s if no separate project standard exists; 1.5 m/s is also acceptable for a more conservative design.",
+    utnote_pv: "⚠ Some in-house opinions suggest a PV velocity of 200–300 m/s or higher, but this is an unverified reference opinion.\nThe default is set to 20 m/s — please adjust to match your actual project standard.",
+    utnote_wastewater: "Velocity for pump transport = 2 m/s / for natural drain = 0.5 m/s (reference only — enter directly in the velocity field below).\nIn piping, a \"pressure of 1\" commonly refers to a velocity of 1 m/s."
   },
   vi: {
     appTitle: "Máy tính MEP",
-    tab1: "Lưu lượng · Tốc độ · Diện tích", tab2: "Số lượng lọc", tab3: "Nội suy tuyến tính", tab4: "Tính báo giá", tab5: "Tính tỷ lệ thức",
+    tab1: "Lưu lượng · Tốc độ · Diện tích", tab2: "Số lượng lọc", tab3: "Nội suy tuyến tính", tab4: "Tính báo giá", tab5: "Tính tỷ lệ thức", tab6: "Tính đường ống UT", tab7: "Đường ống Header·Branch",
     footerText: "MEP QUICK CALC — Công cụ tính toán rà soát nội bộ",
     btnCalc: "Tính toán",
     segLabel1: "Giá trị cần tính",
@@ -1037,7 +1369,69 @@ const I18N = {
     err_ach: "Vui lòng nhập số lần thay đổi khí (ACH).",
     err_filterFlow: "Vui lòng nhập lưu lượng mỗi bộ lọc.",
     t5Sub: "Thể tích phòng = {volume} m³<br>Lưu lượng cần thiết = Thể tích × ACH = {volume} × {ach} = {required} CMH<br>Lưu lượng mỗi bộ lọc = {flowVal} {unit} (quy đổi {flowCMH} CMH)<br>Số lượng tính được = {required} ÷ {flowCMH} = {qtyExact} → làm tròn lên {qty} bộ",
-    unitDae: "bộ"
+    unitDae: "bộ",
+
+    // TAB6
+    t6Title: "Tính đường ống UT",
+    t6Formula: "Khí (bù áp suất) N = Q×1/(1+P)×293/273 &nbsp;|&nbsp; Khí (hệ số cố định) N = Q×600/760×273/293 &nbsp;|&nbsp; Chung D = √(4N/(π×V×3600))×1000",
+    t6SelectLabel: "Chọn loại UT",
+    t6NoteTitle: "Ghi chú",
+    t6QTitle: "Lưu lượng (Q)",
+    t6ConvHint: "Chỉ cần nhập một trong LPM · M³/HR · M³/DAY · TON/DAY, các giá trị còn lại sẽ tự động quy đổi. (TON/DAY giả định tỷ trọng nước = 1)",
+    t6PTitle: "Áp suất (P, kgf/㎠·G)",
+    t6VTitle: "Tốc độ (V, m/s)",
+    t6VHint: "Số màu xám là giá trị mặc định đề xuất. Có thể nhập trực tiếp để thay đổi giá trị.",
+    t6PipeTitle: "Chọn quy cách ống cuối cùng (theo đường kính trong)",
+    t6MatLabel: "Vật liệu", t6SchLabel: "SCH",
+    t6MatSPP: "Ống thường (SPP)", t6MatSTS: "Thép không gỉ (STSXT)",
+    t6PipePlaceholder: "Sẽ hiển thị sau khi tính lưu lượng/tốc độ.",
+    t6RefTitle: "Tham khảo: Đường kính danh nghĩa · ID/OD theo SCH",
+    t6RefNote: "Dựa trên dữ liệu đính kèm (độ dày·ID·khối lượng ống thường SPP / ống thép không gỉ STSXT). Quy cách nhỏ nhất có ID lớn hơn đường kính tính toán (D) được hiển thị làm giá trị đề xuất.",
+    t6DetailsSummary: "Xem thêm: Bảng tham chiếu PIPE (đường kính danh nghĩa ↔ đường kính ngoài ↔ inch)",
+    t6OdNote: "Đường kính ngoài của TUBE tính theo inch. Cấp áp suất mặt bích ANSI CLASS biểu thị bằng PSI trên 150 lb/inch vuông; xấp xỉ #150 ≈ 10K, #300 ≈ 20K, #600 ≈ 40K.",
+    t6ColSize: "Đường kính danh nghĩa", t6ColOD: "OD mm", t6ColSGP: "ID SGP", t6ColSCH20: "ID SCH20", t6ColSCH40: "ID SCH40", t6ColSCH80: "ID SCH80",
+    t6OdColDn: "Đường kính danh nghĩa (A/DN mm)", t6OdColInch: "inch (B)", t6OdColOd: "Đường kính ngoài mm",
+    t6ErrQV: "Vui lòng kiểm tra giá trị lưu lượng (LPM hoặc M³/HR) và tốc độ.",
+    t6ErrP: "Vui lòng nhập giá trị áp suất.",
+    t6SubN_A: "Lưu lượng quy đổi chuẩn N = {q} × 1/(1+{p}) × 293/273 = {n} ㎥/hr",
+    t6SubN_B: "Lưu lượng quy đổi chuẩn N = {q} × 600/760 × 273/293 = {n} ㎥/hr",
+    t6SubD: "Đường kính ống D = √(4×N/(π×V×3600))×1000 = {d} mm",
+    t6SubWasteDay: "M³/DAY = {mday} · TON/DAY ≈ {tday} (giả định tỷ trọng nước = 1)",
+    t6SubWasteRule: "※ Đường ống nước thải nên chọn quy cách lớn hơn một cấp so với đường kính tính toán, và áp dụng cùng kích thước cho tất cả ống nhánh.",
+    t6PipeNoMatch: "Không có quy cách phù hợp trong bảng cho đường kính tính toán ({d}mm). Từ 500A trở lên cần xem xét riêng.",
+    t6PipeResultMain: "{a}A ({b}) · OD {od}mm · ID {id}mm",
+    t6PipeResultSub: "Dư so với đường kính tính toán: {margin}%",
+    t6PipeBumpNote: " · Đã tăng 1 cấp theo quy định đường ống nước thải",
+    // TAB7
+    t7Formula: "Q = A×V &nbsp;|&nbsp; Header n = lưu lượng cộng dồn từ Branch n ~ Branch cuối &nbsp;|&nbsp; D = √(4A/π)×1000",
+    t7HowTitle: "Cách sử dụng",
+    t7HowNote: "① Chọn số lượng Branch và nhập lưu lượng từng Branch (chỉ cần nhập một trong LPM/M³/HR/Kcal/h/RT, các giá trị còn lại tự động quy đổi). ② Header cộng dồn lưu lượng từ Branch xa nhất về hướng nguồn (Header1 = tổng toàn bộ, Header cuối = chỉ Branch cuối). ③ Giá trị mặc định của tốc độ (V) là 2 m/s — sử dụng giá trị này nếu không có yêu cầu riêng.",
+    t7CountLabel: "Số lượng Branch",
+    t7MatLabel: "Vật liệu",
+    t7BranchLabel: "Nhập lưu lượng · tốc độ theo từng Branch",
+    t7FlowHint: "Chỉ cần nhập một trong LPM · M³/HR · Kcal/h · RT, các giá trị còn lại sẽ tự động quy đổi. (LPM = Kcal/h ÷ 300, RT = Kcal/h ÷ 3024; công thức gần đúng giả định ΔT nước làm mát 5℃)",
+    t7HeaderVTitle: "Tốc độ chung cho Header (V, m/s)",
+    t7VHint: "Số màu xám là giá trị mặc định (2 m/s). Sử dụng giá trị này nếu không có yêu cầu riêng, hoặc nhập trực tiếp để thay đổi.",
+    t7BranchResultTitle: "Kết quả Branch",
+    t7HeaderResultTitle: "Kết quả Header (cộng dồn)",
+    t7DiagramTitle: "Sơ đồ đường ống",
+    t7ResultNote: "Quy cách đề xuất là kích thước tiêu chuẩn nhỏ nhất có ID lớn hơn đường kính tính toán (D). Hãy tham khảo \"Dư (%)\" ở trên và tăng thêm một cấp nếu tiêu chuẩn dự án yêu cầu.",
+    t7Branch: "Branch", t7Header: "Header",
+    t7ColLpm: "LPM", t7ColM3hr: "M³/HR", t7ColLhr: "L/hr", t7ColV: "V (m/s)", t7ColD: "D (mm)", t7ColPipe: "Đề xuất", t7ColMargin: "Dư(%)",
+    t7ErrRow: "Vui lòng kiểm tra lưu lượng và tốc độ của Branch {n}.",
+    t7ErrHeaderV: "Vui lòng kiểm tra giá trị tốc độ chung của Header.",
+    t7PipeNoMatch: "Ngoài phạm vi kích thước của bảng",
+    t7DiagSource: "Nguồn", t7DiagEnd: "Điểm cuối",
+    t7ComingSoon: "🚧 Đang phát triển. Công cụ tính đường ống Header/Branch sẽ được bổ sung sau.",
+
+    ut_gn2: "GN2 (Nitơ)", ut_ar: "Ar (Argon)", ut_o2: "O2 (Oxy)", ut_cda: "CDA (Khí khô sạch)",
+    ut_pcw: "PCW (Nước làm mát quy trình)", ut_cw: "CW (Nước làm mát)", ut_di: "DI (Nước khử ion)",
+    ut_hv: "HV", ut_pv: "PV",
+    ut_drain_acid: "DRAIN (Axit)", ut_drain_org: "DRAIN (Hữu cơ)", ut_drain_gen: "DRAIN (Thông thường)",
+    ut_wastewater: "Nước thải / Chất thải lỏng",
+    utnote_pcw: "Thường thiết kế ở tốc độ 1.0–2.0 m/s. Cần xem xét chiều dài đường ống, điều kiện hiện trường và hệ số dự phòng.\nÁp dụng 2 m/s nếu không có tiêu chuẩn riêng; có thể dùng 1.5 m/s để thiết kế an toàn hơn.",
+    utnote_pv: "⚠ Có ý kiến nội bộ cho rằng tốc độ PV nên từ 200–300 m/s trở lên, nhưng đây là ý kiến tham khảo chưa được kiểm chứng.\nGiá trị mặc định là 20 m/s — vui lòng điều chỉnh theo tiêu chuẩn thực tế của dự án.",
+    utnote_wastewater: "Tốc độ khi vận chuyển bằng bơm = 2 m/s / khi thoát tự nhiên = 0.5 m/s (chỉ tham khảo, nhập trực tiếp vào ô tốc độ bên dưới).\nTrong đường ống, \"áp suất 1\" thường được hiểu là tốc độ 1 m/s."
   }
 };
 
@@ -1069,13 +1463,50 @@ document.querySelectorAll('.lang-btn').forEach(btn=>{
     document.documentElement.lang = currentLang;
     applyStaticI18n();
     document.querySelectorAll('.result.show').forEach(r=>r.classList.remove('show'));
+    refreshUt6I18n();
+    refreshHb7I18n();
   });
 });
 applyStaticI18n();
 
+/* Re-render TAB6 dynamic (JS-built) content on language change, without
+   clearing whatever the user has already typed in. */
+function refreshUt6I18n(){
+  if(typeof populateUtSelect !== 'function') return;
+  populateUtSelect();
+  buildPipeIdRefTable();
+  buildPipeOdRefTable();
+  const ut = getUt(document.getElementById('utSelect').value);
+  if(ut && ut.noteKey){
+    document.getElementById('ut-note-text').textContent = t(ut.noteKey);
+  }
+  const pipeResultEl = document.getElementById('utPipeResult');
+  if(pipeResultEl.classList.contains('empty')){
+    pipeResultEl.textContent = t('t6PipePlaceholder');
+  } else if(utLastD !== null){
+    recommendPipe();
+  }
+}
+
+/* Re-render TAB7 dynamic (JS-built) content on language change, without
+   clearing whatever the user has already typed in. */
+function refreshHb7I18n(){
+  if(typeof generateHbRows !== 'function') return;
+  document.querySelectorAll('.hb-branch-card').forEach(card=>{
+    const idx = card.dataset.idx;
+    const titleEl = card.querySelector('.field-group-title');
+    if(titleEl) titleEl.innerHTML = `🔹 ${t('t7Branch')} ${idx}`;
+  });
+  if(hbLastResult){
+    renderHbResults();
+    renderHbDiagram();
+  }
+}
+
 /* ---------- Tab switching ---------- */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
+    if(btn.disabled) return;
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
@@ -1543,6 +1974,514 @@ function calcFilterQty(){
       }) +
     `</div>`;
 }
+
+/* ============================================================
+   TAB 6 : UT 관경 계산
+   ============================================================ */
+
+// UT별 계산 그룹
+//  A = 가스, 표준상태 환산(압력보정) : N = Q × 1/(1+P) × 293/273
+//  B = 가스, 표준상태 환산(고정계수, 압력입력 없음) : N = Q × 600/760 × 273/293
+//  C = 액체/배기/배수, 단순 유량식 (보정 없음)
+//  D = 폐수/폐액 (C와 동일 공식 + 관경 1단계 위 선정 규칙 + M³/DAY,TON/DAY)
+const UT_DATA = [
+  { id:'gn2',        no:1,  nameKey:'ut_gn2',        group:'A', defV:15,  defP:5, noteKey:null },
+  { id:'ar',         no:2,  nameKey:'ut_ar',         group:'A', defV:12,  defP:3, noteKey:null },
+  { id:'o2',         no:3,  nameKey:'ut_o2',         group:'A', defV:15,  defP:7, noteKey:null },
+  { id:'cda',        no:4,  nameKey:'ut_cda',        group:'A', defV:15,  defP:6, noteKey:null },
+  { id:'pcw',        no:5,  nameKey:'ut_pcw',        group:'C', defV:2,   noteKey:'utnote_pcw' },
+  { id:'cw',         no:6,  nameKey:'ut_cw',         group:'C', defV:2,   noteKey:null },
+  { id:'di',         no:7,  nameKey:'ut_di',         group:'C', defV:2.5, noteKey:null },
+  { id:'hv',         no:8,  nameKey:'ut_hv',         group:'B', defV:20,  noteKey:null },
+  { id:'pv',         no:9,  nameKey:'ut_pv',         group:'B', defV:20,  noteKey:'utnote_pv', warn:true },
+  { id:'drain_acid', no:10, nameKey:'ut_drain_acid', group:'C', defV:0.7, noteKey:null },
+  { id:'drain_org',  no:11, nameKey:'ut_drain_org',  group:'C', defV:0.7, noteKey:null },
+  { id:'drain_gen',  no:12, nameKey:'ut_drain_gen',  group:'C', defV:0.7, noteKey:null },
+  { id:'wastewater', no:13, nameKey:'ut_wastewater', group:'D', defV:1,   noteKey:'utnote_wastewater' },
+];
+
+// 배관 내경/외경 참조표 (첨부 이미지 그대로 반영, 15A~500A)
+const PIPE_ID_SPP = [
+  {a:15,  b:'1/2B',   od:21.7, sch20:null, sch40:{t:2.8,id:16.1,w:1.31}, sch80:{t:3.7,id:14.3,w:1.64}, sgp:{t:2.8,id:16.1,w:1.31}},
+  {a:20,  b:'3/4B',   od:27.2, sch20:null, sch40:{t:2.9,id:21.4,w:1.74}, sch80:{t:3.9,id:19.4,w:2.24}, sgp:{t:2.8,id:21.6,w:1.68}},
+  {a:25,  b:'1B',     od:34.0, sch20:null, sch40:{t:3.4,id:27.2,w:2.57}, sch80:{t:4.5,id:25.0,w:3.27}, sgp:{t:3.2,id:27.6,w:2.43}},
+  {a:32,  b:'1 1/4B', od:42.7, sch20:null, sch40:{t:3.6,id:35.5,w:3.47}, sch80:{t:4.9,id:32.9,w:4.57}, sgp:{t:3.5,id:35.7,w:3.38}},
+  {a:40,  b:'1 1/2B', od:48.6, sch20:null, sch40:{t:3.7,id:41.2,w:4.10}, sch80:{t:5.1,id:38.4,w:5.47}, sgp:{t:3.5,id:41.6,w:3.89}},
+  {a:50,  b:'2B',     od:60.5, sch20:{t:3.2,id:54.1,w:4.52}, sch40:{t:3.9,id:52.7,w:5.44}, sch80:{t:5.5,id:49.5,w:7.46}, sgp:{t:3.8,id:52.9,w:5.31}},
+  {a:65,  b:'2 1/2B', od:76.3, sch20:{t:4.5,id:67.3,w:7.79}, sch40:{t:5.2,id:65.9,w:9.12}, sch80:{t:7.0,id:62.3,w:12.0}, sgp:{t:4.2,id:67.9,w:7.47}},
+  {a:80,  b:'3B',     od:89.1, sch20:{t:4.5,id:80.1,w:9.4},  sch40:{t:5.5,id:78.1,w:11.3}, sch80:{t:7.6,id:73.9,w:15.3}, sgp:{t:4.2,id:80.7,w:8.79}},
+  {a:100, b:'4B',     od:114.3, sch20:{t:4.9,id:104.5,w:13.2}, sch40:{t:6.0,id:102.3,w:16.0}, sch80:{t:8.6,id:97.1,w:22.4}, sgp:{t:4.5,id:105.3,w:12.18}},
+  {a:125, b:'5B',     od:139.8, sch20:{t:5.1,id:129.6,w:16.9}, sch40:{t:6.6,id:126.6,w:21.7}, sch80:{t:9.5,id:120.8,w:30.5}, sgp:{t:4.5,id:130.8,w:15.01}},
+  {a:150, b:'6B',     od:165.2, sch20:{t:5.5,id:154.2,w:21.7}, sch40:{t:7.1,id:151.0,w:27.7}, sch80:{t:11.0,id:143.2,w:41.8}, sgp:{t:5,id:155.2,w:19.75}},
+  {a:200, b:'8B',     od:216.4, sch20:{t:6.4,id:203.6,w:33.1}, sch40:{t:8.2,id:200.0,w:42.1}, sch80:{t:12.7,id:191.0,w:63.8}, sgp:{t:5.8,id:204.8,w:30.12}},
+  {a:250, b:'10B',    od:267.4, sch20:{t:6.4,id:254.6,w:41.2}, sch40:{t:9.3,id:248.8,w:59.2}, sch80:{t:15.1,id:237.2,w:93.9}, sgp:{t:6.6,id:254.2,w:42.45}},
+  {a:300, b:'12B',    od:318.5, sch20:{t:6.4,id:305.7,w:49.3}, sch40:{t:10.3,id:297.9,w:78.3}, sch80:{t:17.4,id:283.7,w:129}, sgp:{t:6.9,id:304.7,w:53.02}},
+  {a:350, b:'14B',    od:355.6, sch20:{t:7.9,id:339.8,w:67.7}, sch40:{t:11.1,id:333.4,w:94.3}, sch80:{t:19.0,id:317.6,w:158}, sgp:{t:7.9,id:339.8,w:67.74}},
+  {a:400, b:'16B',    od:406.4, sch20:{t:7.9,id:390.6,w:77.6}, sch40:{t:12.7,id:381.0,w:123}, sch80:{t:21.4,id:363.6,w:203}, sgp:{t:7.9,id:390.6,w:77.63}},
+  {a:450, b:'18B',    od:457.2, sch20:{t:7.9,id:441.4,w:87.5}, sch40:{t:14.3,id:428.6,w:156}, sch80:{t:23.8,id:409.6,w:254}, sgp:{t:7.9,id:441.4,w:87.53}},
+  {a:500, b:'20B',    od:508.0, sch20:{t:9.5,id:489.0,w:117}, sch40:{t:15.1,id:477.8,w:184}, sch80:{t:26.2,id:455.6,w:311}, sgp:{t:7.9,id:492.2,w:97.43}},
+];
+const PIPE_ID_STS = [
+  {a:15,  b:'1/2B',   od:21.7, sch20:null, sch40:{t:2.8,id:16.1,w:1.32}, sch80:{t:3.7,id:14.3,w:1.66}, sgp:{t:2.8,id:16.1,w:1.32}},
+  {a:20,  b:'3/4B',   od:27.2, sch20:null, sch40:{t:2.9,id:21.4,w:1.76}, sch80:{t:3.9,id:19.4,w:2.26}, sgp:{t:2.8,id:21.6,w:1.70}},
+  {a:25,  b:'1B',     od:34.0, sch20:null, sch40:{t:3.4,id:27.2,w:2.59}, sch80:{t:4.5,id:25.0,w:3.31}, sgp:{t:3.2,id:27.6,w:2.46}},
+  {a:32,  b:'1 1/4B', od:42.7, sch20:null, sch40:{t:3.6,id:35.5,w:3.51}, sch80:{t:4.9,id:32.9,w:4.61}, sgp:{t:3.5,id:35.7,w:3.42}},
+  {a:40,  b:'1 1/2B', od:48.6, sch20:null, sch40:{t:3.7,id:41.2,w:4.14}, sch80:{t:5.1,id:38.4,w:5.53}, sgp:{t:3.5,id:41.6,w:3.93}},
+  {a:50,  b:'2B',     od:60.5, sch20:{t:3.2,id:54.1,w:4.57}, sch40:{t:3.9,id:52.7,w:5.50}, sch80:{t:5.5,id:49.5,w:7.54}, sgp:{t:3.8,id:52.9,w:5.37}},
+  {a:65,  b:'2 1/2B', od:76.3, sch20:{t:4.5,id:67.3,w:8.05}, sch40:{t:5.2,id:65.9,w:9.21}, sch80:{t:7.0,id:62.3,w:12.1}, sgp:{t:4.2,id:67.9,w:7.54}},
+  {a:80,  b:'3B',     od:89.1, sch20:{t:4.5,id:80.1,w:9.48}, sch40:{t:5.5,id:78.1,w:11.5}, sch80:{t:7.6,id:73.9,w:15.4}, sgp:{t:4.2,id:80.7,w:8.88}},
+  {a:100, b:'4B',     od:114.3, sch20:{t:4.9,id:104.5,w:13.4}, sch40:{t:6.0,id:102.3,w:16.2}, sch80:{t:8.6,id:97.1,w:22.6}, sgp:{t:4.5,id:105.3,w:12.31}},
+  {a:125, b:'5B',     od:139.8, sch20:{t:5.1,id:129.6,w:17.1}, sch40:{t:6.6,id:126.6,w:21.9}, sch80:{t:9.5,id:120.8,w:30.8}, sgp:{t:4.5,id:130.8,w:15.17}},
+  {a:150, b:'6B',     od:165.2, sch20:{t:5.5,id:154.2,w:21.9}, sch40:{t:7.1,id:151.0,w:28.0}, sch80:{t:11.0,id:143.2,w:42.3}, sgp:{t:5,id:155.2,w:19.95}},
+  {a:200, b:'8B',     od:216.4, sch20:{t:6.4,id:203.6,w:33.5}, sch40:{t:8.2,id:200.0,w:42.5}, sch80:{t:12.7,id:191.0,w:64.4}, sgp:{t:5.8,id:204.8,w:30.43}},
+  {a:250, b:'10B',    od:267.4, sch20:{t:6.4,id:254.6,w:41.6}, sch40:{t:9.3,id:248.8,w:59.8}, sch80:{t:15.1,id:237.2,w:94.9}, sgp:{t:6.6,id:254.2,w:42.88}},
+  {a:300, b:'12B',    od:318.5, sch20:{t:6.4,id:305.7,w:49.8}, sch40:{t:10.3,id:297.9,w:79.1}, sch80:{t:17.4,id:283.7,w:131}, sgp:{t:6.9,id:304.7,w:53.56}},
+  {a:350, b:'14B',    od:355.6, sch20:{t:7.9,id:339.8,w:68.4}, sch40:{t:11.1,id:333.4,w:95.3}, sch80:{t:19.0,id:317.6,w:159}, sgp:{t:7.9,id:339.8,w:68.42}},
+  {a:400, b:'16B',    od:406.4, sch20:{t:7.9,id:390.6,w:78.4}, sch40:{t:12.7,id:381.0,w:125}, sch80:{t:21.4,id:363.6,w:205}, sgp:{t:7.9,id:390.6,w:78.42}},
+  {a:450, b:'18B',    od:457.2, sch20:{t:7.9,id:441.4,w:88.4}, sch40:{t:14.3,id:428.6,w:158}, sch80:{t:23.8,id:409.6,w:257}, sgp:{t:7.9,id:441.4,w:88.42}},
+  {a:500, b:'20B',    od:508.0, sch20:{t:9.5,id:489.0,w:118}, sch40:{t:15.1,id:477.8,w:185}, sch80:{t:26.2,id:455.6,w:311}, sgp:{t:7.9,id:492.2,w:98.41}},
+];
+
+// PIPE 기준 (호칭지름 ↔ inch ↔ 바깥지름), 첨부 이미지1 그대로
+const PIPE_OD = [
+  {dn:6,inch:'1/8',od:10.5},{dn:8,inch:'1/4',od:13.8},{dn:10,inch:'3/8',od:17.3},
+  {dn:15,inch:'1/2',od:21.7},{dn:20,inch:'3/4',od:27.2},{dn:25,inch:'1',od:34.0},
+  {dn:32,inch:'1 1/4',od:42.7},{dn:40,inch:'1 1/2',od:48.6},{dn:50,inch:'2',od:60.5},
+  {dn:65,inch:'2 1/2',od:76.3},{dn:80,inch:'3',od:89.1},{dn:90,inch:'3 1/2',od:101.6},
+  {dn:100,inch:'4',od:114.3},{dn:125,inch:'5',od:139.8},{dn:150,inch:'6',od:165.2},
+  {dn:200,inch:'8',od:216.3},{dn:250,inch:'10',od:267.4},{dn:300,inch:'12',od:318.5},
+  {dn:350,inch:'14',od:355.6},{dn:400,inch:'16',od:406.4},{dn:450,inch:'18',od:457.2},
+  {dn:500,inch:'20',od:508.0},{dn:550,inch:'22',od:558.8},{dn:600,inch:'24',od:609.6},
+  {dn:650,inch:'26',od:660.4},{dn:700,inch:'28',od:null},{dn:750,inch:'30',od:null},
+  {dn:800,inch:'32',od:null},{dn:850,inch:'34',od:null},{dn:900,inch:'36',od:null},
+  {dn:950,inch:'38',od:null},{dn:1000,inch:'40',od:null},
+];
+
+let utUpdating = false;
+let utLastD = null;
+let utLastBump = false;
+
+function roundN(v,d){ return Math.round(v*Math.pow(10,d))/Math.pow(10,d); }
+function getUt(id){ return UT_DATA.find(u=>u.id===id); }
+
+function populateUtSelect(){
+  const sel = document.getElementById('utSelect');
+  const prev = sel.value;
+  sel.innerHTML = UT_DATA.map(u=>`<option value="${u.id}">${u.no}. ${t(u.nameKey)}</option>`).join('');
+  if(prev){ sel.value = prev; }
+}
+
+function buildPipeIdRefTable(){
+  const el = document.getElementById('pipeIdRefTable');
+  let html = `<tr><th>${t('t6ColSize')}</th><th>${t('t6ColOD')}</th><th>${t('t6ColSGP')}</th><th>${t('t6ColSCH20')}</th><th>${t('t6ColSCH40')}</th><th>${t('t6ColSCH80')}</th></tr>`;
+  PIPE_ID_SPP.forEach(r=>{
+    html += `<tr><td>${r.a}A (${r.b})</td><td>${r.od}</td><td>${r.sgp.id}</td><td>${r.sch20 ? r.sch20.id : '-'}</td><td>${r.sch40.id}</td><td>${r.sch80.id}</td></tr>`;
+  });
+  el.innerHTML = html;
+}
+function buildPipeOdRefTable(){
+  const el = document.getElementById('pipeOdRefTable');
+  let html = `<tr><th>${t('t6OdColDn')}</th><th>${t('t6OdColInch')}</th><th>${t('t6OdColOd')}</th></tr>`;
+  PIPE_OD.forEach(r=>{
+    html += `<tr><td>${r.dn}</td><td>${r.inch}</td><td>${r.od===null?'-':r.od}</td></tr>`;
+  });
+  el.innerHTML = html;
+}
+
+function onUtChange(){
+  const ut = getUt(document.getElementById('utSelect').value);
+
+  const noteBox = document.getElementById('ut-note-box');
+  const noteText = document.getElementById('ut-note-text');
+  if(ut.noteKey){
+    noteBox.style.display = 'block';
+    noteText.textContent = t(ut.noteKey);
+    noteText.classList.toggle('warn', !!ut.warn);
+  } else {
+    noteBox.style.display = 'none';
+  }
+
+  document.getElementById('ut-pressure-field').style.display = (ut.group === 'A') ? 'block' : 'none';
+  if(ut.group === 'A'){
+    const p = document.getElementById('utPressure');
+    p.value = ut.defP;
+    p.classList.add('is-default');
+  }
+
+  const isWaste = (ut.group === 'D');
+  document.getElementById('ut-m3day-field').style.display = isWaste ? 'block' : 'none';
+  document.getElementById('ut-tonday-field').style.display = isWaste ? 'block' : 'none';
+
+  const v = document.getElementById('utVelocity');
+  v.value = ut.defV;
+  v.classList.add('is-default');
+
+  ['utLpm','utM3hr','utM3day','utTonday'].forEach(id=>{ document.getElementById(id).value = ''; });
+
+  document.getElementById('result6').classList.remove('show','error');
+  document.getElementById('ut-pipe-select-group').style.display = 'none';
+  utLastD = null;
+  document.getElementById('utPipeResult').classList.add('empty');
+  document.getElementById('utPipeResult').textContent = t('t6PipePlaceholder');
+}
+
+function clearDefaultStyle(el){ el.classList.remove('is-default'); }
+
+function syncFromLpm(){
+  if(utUpdating) return;
+  utUpdating = true;
+  const lpm = parseFloat(document.getElementById('utLpm').value);
+  if(!isNaN(lpm)){
+    const m3hr = (lpm/1000)*60;
+    document.getElementById('utM3hr').value = roundN(m3hr,4);
+    document.getElementById('utM3day').value = roundN(m3hr*24,3);
+    document.getElementById('utTonday').value = roundN(m3hr*24,3);
+  }
+  utUpdating = false;
+}
+function syncFromM3hr(){
+  if(utUpdating) return;
+  utUpdating = true;
+  const m3hr = parseFloat(document.getElementById('utM3hr').value);
+  if(!isNaN(m3hr)){
+    document.getElementById('utLpm').value = roundN((m3hr*1000)/60,2);
+    document.getElementById('utM3day').value = roundN(m3hr*24,3);
+    document.getElementById('utTonday').value = roundN(m3hr*24,3);
+  }
+  utUpdating = false;
+}
+function syncFromM3day(){
+  if(utUpdating) return;
+  utUpdating = true;
+  const m3day = parseFloat(document.getElementById('utM3day').value);
+  if(!isNaN(m3day)){
+    const m3hr = m3day/24;
+    document.getElementById('utM3hr').value = roundN(m3hr,4);
+    document.getElementById('utLpm').value = roundN((m3hr*1000)/60,2);
+    document.getElementById('utTonday').value = roundN(m3day,3);
+  }
+  utUpdating = false;
+}
+function syncFromTonday(){
+  if(utUpdating) return;
+  utUpdating = true;
+  const tonday = parseFloat(document.getElementById('utTonday').value);
+  if(!isNaN(tonday)){
+    const m3day = tonday; // 물 비중(density) = 1 가정
+    const m3hr = m3day/24;
+    document.getElementById('utM3day').value = roundN(m3day,3);
+    document.getElementById('utM3hr').value = roundN(m3hr,4);
+    document.getElementById('utLpm').value = roundN((m3hr*1000)/60,2);
+  }
+  utUpdating = false;
+}
+
+function calcUT(){
+  const ut = getUt(document.getElementById('utSelect').value);
+  const resEl = document.getElementById('result6');
+  resEl.classList.remove('error');
+
+  const qM3hr = parseFloat(document.getElementById('utM3hr').value);
+  const v = parseFloat(document.getElementById('utVelocity').value);
+
+  if(isNaN(qM3hr) || qM3hr <= 0 || isNaN(v) || v <= 0){
+    resEl.classList.add('show','error');
+    resEl.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('t6ErrQV')}</div>`;
+    document.getElementById('ut-pipe-select-group').style.display = 'none';
+    return;
+  }
+
+  let nStd = qM3hr;
+  const subLines = [];
+
+  if(ut.group === 'A'){
+    const p = parseFloat(document.getElementById('utPressure').value);
+    if(isNaN(p)){
+      resEl.classList.add('show','error');
+      resEl.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('t6ErrP')}</div>`;
+      return;
+    }
+    nStd = qM3hr * (1/(1+p)) * (293/273);
+    subLines.push(tf('t6SubN_A', {q: qM3hr.toFixed(3), p: p, n: nStd.toFixed(6)}));
+  } else if(ut.group === 'B'){
+    nStd = qM3hr * (600/760) * (273/293);
+    subLines.push(tf('t6SubN_B', {q: qM3hr.toFixed(3), n: nStd.toFixed(6)}));
+  }
+
+  const dMm = Math.sqrt(4*nStd/(Math.PI*v*3600)) * 1000;
+  subLines.push(tf('t6SubD', {d: dMm.toFixed(2)}));
+
+  if(ut.group === 'D'){
+    const m3day = qM3hr*24;
+    subLines.push(tf('t6SubWasteDay', {mday: m3day.toFixed(2), tday: m3day.toFixed(2)}));
+    subLines.push(t('t6SubWasteRule'));
+  }
+
+  resEl.classList.add('show');
+  resEl.innerHTML = `<div class="result-label">✅ RESULT</div>` +
+    `<div class="result-value">D ≈ ${dMm.toFixed(2)} mm</div>` +
+    `<div class="result-sub">${subLines.join('<br>')}</div>`;
+
+  document.getElementById('ut-pipe-select-group').style.display = 'block';
+  updatePipeRecommendation(dMm, ut.group === 'D');
+}
+
+function updatePipeRecommendation(dMm, bumpOneSize){
+  utLastD = dMm;
+  utLastBump = bumpOneSize;
+  recommendPipe();
+}
+
+function recommendPipe(){
+  if(utLastD === null) return;
+  const mat = document.getElementById('utPipeMat').value;
+  const sch = document.getElementById('utPipeSch').value;
+  const table = (mat === 'STS') ? PIPE_ID_STS : PIPE_ID_SPP;
+  const rows = table.filter(r=>r[sch]);
+  let idx = rows.findIndex(r=>r[sch].id >= utLastD);
+  const out = document.getElementById('utPipeResult');
+
+  if(idx === -1){
+    out.classList.add('empty');
+    out.innerHTML = tf('t6PipeNoMatch', {d: utLastD.toFixed(1)});
+    return;
+  }
+  if(utLastBump && idx < rows.length-1) idx += 1;
+
+  const chosen = rows[idx];
+  const margin = ((chosen[sch].id - utLastD)/utLastD*100);
+  out.classList.remove('empty');
+  out.innerHTML = `<b>${tf('t6PipeResultMain', {a:chosen.a, b:chosen.b, od:chosen.od, id:chosen[sch].id})}</b>` +
+    `<div class="cmm-line">${tf('t6PipeResultSub', {margin: margin.toFixed(1)})}${utLastBump ? t('t6PipeBumpNote') : ''}</div>`;
+}
+
+populateUtSelect();
+buildPipeIdRefTable();
+buildPipeOdRefTable();
+onUtChange();
+
+/* ============================================================
+   TAB 7 : Header·Branch 관경
+   ============================================================ */
+
+let hbUpdating = false;
+let hbLastResult = null; // cached calc output, used to re-render on language switch
+
+function findPipeMatch(dMm, mat, sch){
+  const table = (mat === 'STS') ? PIPE_ID_STS : PIPE_ID_SPP;
+  const rows = table.filter(r=>r[sch]);
+  const idx = rows.findIndex(r=>r[sch].id >= dMm);
+  if(idx === -1) return null;
+  const row = rows[idx];
+  const margin = ((row[sch].id - dMm)/dMm*100);
+  return { a: row.a, b: row.b, od: row.od, id: row[sch].id, margin };
+}
+
+function calcDiameterFromLpm(lpm, vMs){
+  const qM3min = lpm/1000;      // LPM -> m3/min
+  const vMpm = vMs*60;          // m/s -> m/min
+  const A = qM3min/vMpm;        // m2
+  const Dm = Math.sqrt(4*A/Math.PI);
+  return Dm*1000;               // mm
+}
+
+function generateHbRows(){
+  const count = parseInt(document.getElementById('hbCount').value, 10);
+  const wrap = document.getElementById('hbBranchList');
+  let html = '';
+  for(let i=1;i<=count;i++){
+    html += `<div class="hb-branch-card" data-idx="${i}">
+      <div class="field-group-title">🔹 ${t('t7Branch')} ${i}</div>
+      <div class="row">
+        <div class="field"><label>LPM</label><input type="number" class="hb-flow" data-idx="${i}" data-field="lpm" placeholder="1800"></div>
+        <div class="field"><label>M³/HR</label><input type="number" class="hb-flow" data-idx="${i}" data-field="m3hr"></div>
+        <div class="field"><label>Kcal/h</label><input type="number" class="hb-flow" data-idx="${i}" data-field="kcal"></div>
+        <div class="field"><label>RT</label><input type="number" class="hb-flow" data-idx="${i}" data-field="rt"></div>
+        <div class="field"><label>V (m/s)</label><input type="number" class="hb-v is-default" data-idx="${i}" value="2"></div>
+      </div>
+    </div>`;
+  }
+  wrap.innerHTML = html;
+  document.getElementById('hbResult').classList.remove('show','error');
+  document.getElementById('hbResultTables').style.display = 'none';
+  hbLastResult = null;
+}
+
+document.getElementById('hbBranchList').addEventListener('input', (e)=>{
+  if(e.target.classList.contains('hb-flow')){
+    syncHbFlow(e.target.dataset.idx, e.target.dataset.field, parseFloat(e.target.value));
+  } else if(e.target.classList.contains('hb-v')){
+    e.target.classList.remove('is-default');
+  }
+});
+
+function syncHbFlow(idx, field, value){
+  if(hbUpdating) return;
+  hbUpdating = true;
+  if(!isNaN(value)){
+    let lpm;
+    if(field === 'lpm') lpm = value;
+    else if(field === 'm3hr') lpm = value*1000/60;
+    else if(field === 'kcal') lpm = value/300;
+    else if(field === 'rt') lpm = (value*3024)/300;
+    setHbField(idx,'lpm', roundN(lpm,4));
+    setHbField(idx,'m3hr', roundN(lpm*60/1000,4));
+    setHbField(idx,'kcal', roundN(lpm*300,2));
+    setHbField(idx,'rt', roundN((lpm*300)/3024,4));
+  }
+  hbUpdating = false;
+}
+function setHbField(idx, field, val){
+  const el = document.querySelector(`.hb-flow[data-idx="${idx}"][data-field="${field}"]`);
+  if(el) el.value = val;
+}
+function getHbLpm(idx){
+  const el = document.querySelector(`.hb-flow[data-idx="${idx}"][data-field="lpm"]`);
+  return el ? parseFloat(el.value) : NaN;
+}
+function getHbV(idx){
+  const el = document.querySelector(`.hb-v[data-idx="${idx}"]`);
+  return el ? parseFloat(el.value) : NaN;
+}
+
+function calcHB(){
+  const count = parseInt(document.getElementById('hbCount').value, 10);
+  const mat = document.getElementById('hbMat').value;
+  const sch = document.getElementById('hbSch').value;
+  const headerV = parseFloat(document.getElementById('hbHeaderV').value);
+  const resEl = document.getElementById('hbResult');
+  resEl.classList.remove('error');
+
+  const branchLpm = [], branchV = [];
+  for(let i=1;i<=count;i++){
+    const lpm = getHbLpm(i);
+    const v = getHbV(i);
+    if(isNaN(lpm) || lpm <= 0 || isNaN(v) || v <= 0){
+      resEl.classList.add('show','error');
+      resEl.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${tf('t7ErrRow',{n:i})}</div>`;
+      document.getElementById('hbResultTables').style.display = 'none';
+      return;
+    }
+    branchLpm.push(lpm); branchV.push(v);
+  }
+  if(isNaN(headerV) || headerV <= 0){
+    resEl.classList.add('show','error');
+    resEl.innerHTML = `<div class="result-label">⚠️ ERROR</div><div class="result-value">${t('t7ErrHeaderV')}</div>`;
+    document.getElementById('hbResultTables').style.display = 'none';
+    return;
+  }
+
+  const branchD = branchLpm.map((lpm,i)=>calcDiameterFromLpm(lpm, branchV[i]));
+  const branchPipe = branchD.map(d=>findPipeMatch(d, mat, sch));
+
+  const headerLpm = [];
+  for(let i=1;i<=count;i++){
+    let sum = 0;
+    for(let k=i;k<=count;k++) sum += branchLpm[k-1];
+    headerLpm.push(sum);
+  }
+  const headerD = headerLpm.map(lpm=>calcDiameterFromLpm(lpm, headerV));
+  const headerPipe = headerD.map(d=>findPipeMatch(d, mat, sch));
+
+  hbLastResult = { count, mat, sch, branchLpm, branchV, branchD, branchPipe, headerV, headerLpm, headerD, headerPipe };
+
+  resEl.classList.add('show');
+  resEl.innerHTML = `<div class="result-label">✅ RESULT</div><div class="result-value">Header1 ≈ ${headerD[0].toFixed(1)} mm (${headerPipe[0] ? headerPipe[0].a+'A' : '-'})</div>`;
+
+  renderHbResults();
+  renderHbDiagram();
+  document.getElementById('hbResultTables').style.display = 'block';
+}
+
+function pipeCellHtml(pipe){
+  if(!pipe) return `<span style="color:var(--red)">${t('t7PipeNoMatch')}</span>`;
+  return `${pipe.a}A (${pipe.b})`;
+}
+
+function renderHbResults(){
+  if(!hbLastResult) return;
+  const r = hbLastResult;
+
+  let bHtml = `<tr><th>${t('t7Branch')}</th><th>${t('t7ColLpm')}</th><th>${t('t7ColM3hr')}</th><th>${t('t7ColV')}</th><th>${t('t7ColD')}</th><th>${t('t7ColPipe')}</th><th>${t('t7ColMargin')}</th></tr>`;
+  for(let i=0;i<r.count;i++){
+    const p = r.branchPipe[i];
+    bHtml += `<tr><td>${t('t7Branch')} ${i+1}</td><td>${r.branchLpm[i].toFixed(1)}</td><td>${(r.branchLpm[i]*60/1000).toFixed(2)}</td><td>${r.branchV[i]}</td><td>${r.branchD[i].toFixed(1)}</td><td>${pipeCellHtml(p)}</td><td>${p ? p.margin.toFixed(1) : '-'}</td></tr>`;
+  }
+  document.getElementById('hbBranchTable').innerHTML = bHtml;
+
+  let hHtml = `<tr><th>${t('t7Header')}</th><th>${t('t7ColLpm')}</th><th>${t('t7ColLhr')}</th><th>${t('t7ColV')}</th><th>${t('t7ColD')}</th><th>${t('t7ColPipe')}</th><th>${t('t7ColMargin')}</th></tr>`;
+  for(let i=0;i<r.count;i++){
+    const p = r.headerPipe[i];
+    hHtml += `<tr><td>${t('t7Header')} ${i+1}</td><td>${r.headerLpm[i].toFixed(1)}</td><td>${(r.headerLpm[i]*60).toFixed(0)}</td><td>${r.headerV}</td><td>${r.headerD[i].toFixed(1)}</td><td>${pipeCellHtml(p)}</td><td>${p ? p.margin.toFixed(1) : '-'}</td></tr>`;
+  }
+  document.getElementById('hbHeaderTable').innerHTML = hHtml;
+}
+
+function renderHbDiagram(){
+  if(!hbLastResult) return;
+  const r = hbLastResult;
+  const n = r.count;
+  const segW = 130;
+  const marginL = 70, marginR = 90;
+  const width = marginL + n*segW + marginR;
+  const height = 250;
+  const lineY = 160;
+
+  // tap positions: Branch n (index n-1) is leftmost (dead end), Branch 1 is rightmost (nearest source)
+  // tapX[k] = position for Branch k  (k = 1..n), spaced left-to-right as k goes n..1
+  const tapX = {};
+  for(let k=n;k>=1;k--){
+    tapX[k] = marginL + (n-k)*segW;
+  }
+  const sourceX = marginL + (n-1)*segW + segW;
+  const endX = marginL - 30;
+
+  let svg = `<svg class="hb-diagram-svg" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<line x1="${endX}" y1="${lineY}" x2="${sourceX}" y2="${lineY}" stroke="#93B0C9" stroke-width="3" stroke-linecap="round"/>`;
+
+  // dead-end cap
+  svg += `<line x1="${endX}" y1="${lineY-8}" x2="${endX}" y2="${lineY+8}" stroke="#93B0C9" stroke-width="3"/>`;
+  svg += `<text x="${endX}" y="${lineY+26}" font-size="10" fill="#93B0C9" text-anchor="middle" font-family="monospace">${t('t7DiagEnd')}</text>`;
+
+  // source marker
+  svg += `<circle cx="${sourceX}" cy="${lineY}" r="5" fill="#35C0EE"/>`;
+  svg += `<text x="${sourceX}" y="${lineY+26}" font-size="10" fill="#35C0EE" text-anchor="middle" font-family="monospace">${t('t7DiagSource')}</text>`;
+
+  // header segments: Header i spans from tapX[i] to (i==1 ? sourceX : tapX[i-1])
+  for(let i=1;i<=n;i++){
+    const x1 = tapX[i];
+    const x2 = (i === 1) ? sourceX : tapX[i-1];
+    const mid = (x1+x2)/2;
+    const p = r.headerPipe[i-1];
+    svg += `<text x="${mid}" y="${lineY+22}" font-size="10.5" fill="#FF8A57" text-anchor="middle" font-family="monospace">${t('t7Header')}${i}</text>`;
+    svg += `<text x="${mid}" y="${lineY+35}" font-size="10.5" fill="#97CE4C" text-anchor="middle" font-family="monospace">${p ? p.a+'A' : '-'}</text>`;
+  }
+
+  // branch taps
+  const numFmt = (v)=> v.toLocaleString('en-US', {maximumFractionDigits: 1});
+  for(let k=1;k<=n;k++){
+    const x = tapX[k];
+    const p = r.branchPipe[k-1];
+    const lpm = r.branchLpm[k-1];
+    const m3hr = lpm*60/1000;
+    const kcalh = lpm*300;
+    const lhr = lpm*60;
+    const tapTopY = lineY - 70;
+    svg += `<line x1="${x}" y1="${lineY}" x2="${x}" y2="${tapTopY}" stroke="#35C0EE" stroke-width="2.5"/>`;
+    svg += `<circle cx="${x}" cy="${tapTopY}" r="4" fill="#35C0EE"/>`;
+    svg += `<text x="${x}" y="${tapTopY-59}" font-size="10.5" fill="#EDF4FA" text-anchor="middle" font-family="monospace">${t('t7Branch')}${k}</text>`;
+    svg += `<text x="${x}" y="${tapTopY-46}" font-size="9" fill="#FF8686" text-anchor="middle" font-family="monospace">${numFmt(lhr)} L/hr</text>`;
+    svg += `<text x="${x}" y="${tapTopY-34}" font-size="9" fill="#FFC98A" text-anchor="middle" font-family="monospace">${numFmt(lpm)} LPM</text>`;
+    svg += `<text x="${x}" y="${tapTopY-22}" font-size="9" fill="#FFC98A" text-anchor="middle" font-family="monospace">${numFmt(m3hr)} M3/HR</text>`;
+    svg += `<text x="${x}" y="${tapTopY-10}" font-size="9" fill="#FFC98A" text-anchor="middle" font-family="monospace">${numFmt(kcalh)} Kcal/h</text>`;
+    svg += `<text x="${x}" y="${lineY-15}" font-size="10.5" fill="#97CE4C" text-anchor="middle" font-family="monospace">${p ? p.a+'A' : '-'}</text>`;
+  }
+
+  svg += `</svg>`;
+  document.getElementById('hbDiagramWrap').innerHTML = svg;
+}
+
+generateHbRows();
 </script>
 </body>
 </html>
