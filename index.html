@@ -1156,7 +1156,13 @@
         <div class="field" id="psy-field-rh"><label data-i18n="t8LabelRh">상대습도 RH (%)</label><input type="number" id="psyRh" placeholder="예: 50" data-i18n-ph="ph50"></div>
         <div class="field" id="psy-field-w" style="display:none;"><label data-i18n="t8LabelW">절대습도 W (kg/kg)</label><input type="number" id="psyW" placeholder="예: 0.0105" data-i18n-ph="ph0105"></div>
         <div class="field" id="psy-field-tdp" style="display:none;"><label data-i18n="t8LabelTdp">노점온도 Tdp (℃)</label><input type="number" id="psyTdp" placeholder="예: 15" data-i18n-ph="ph15b"></div>
-        <div class="field" id="psy-field-h" style="display:none;"><label data-i18n="t8LabelH">엔탈피 h (kJ/kg)</label><input type="number" id="psyH" placeholder="예: 52.8" data-i18n-ph="ph528"></div>
+        <div class="field-group-2" id="psy-field-h" style="display:none; flex:1 1 100%;">
+          <label data-i18n="t8LabelH" style="display:block; font-size:11.5px; color:var(--muted); margin-bottom:5px; font-family:var(--mono);">엔탈피 h (kJ/kg 또는 kcal/kg, 1개만 입력)</label>
+          <div class="row">
+            <div class="field"><label data-i18n="t8LabelHkJ">kJ/kg</label><input type="number" id="psyH" placeholder="예: 52.8" data-i18n-ph="ph528" oninput="syncPsyH('kj')"></div>
+            <div class="field"><label data-i18n="t8LabelHkcal">kcal/kg</label><input type="number" id="psyHkcal" placeholder="예: 12.6" data-i18n-ph="ph126" oninput="syncPsyH('kcal')"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1169,6 +1175,8 @@
         <div class="psy-chart-legend">
           <span class="lg-item"><span class="lg-swatch" style="border-color:#EDF4FA;"></span><span data-i18n="t8ChartSat">포화선 (RH 100%)</span></span>
           <span class="lg-item"><span class="lg-swatch" style="border-color:#5C7691;"></span><span data-i18n="t8ChartRhLines">RH 20/40/60/80%</span></span>
+          <span class="lg-item"><span class="lg-swatch" style="border-color:#B97A4A;border-top-style:dashed;"></span><span data-i18n="t8ChartEnthalpyLines">엔탈피선 (20kJ/kg 간격)</span></span>
+          <span class="lg-item"><span class="lg-swatch dot" style="background:#97CE4C;"></span><span data-i18n="t8ChartDewPoint">노점온도</span></span>
           <span class="lg-item"><span class="lg-swatch dot" style="background:#FF7A33;"></span><span data-i18n="t8ChartPoint">현재 상태점</span></span>
         </div>
       </div>
@@ -1206,15 +1214,15 @@ const I18N = {
     t8TdbLabel: "값 (℃)",
     t8SecondLabel: "두번째 입력값 선택 (1개만 입력)",
     t8ModeRh: "상대습도 (RH)", t8ModeW: "절대습도 (kg/kg)", t8ModeTdp: "노점온도 (℃)", t8ModeH: "엔탈피 (kJ/kg)",
-    t8LabelRh: "상대습도 RH (%)", t8LabelW: "절대습도 W (kg/kg)", t8LabelTdp: "노점온도 Tdp (℃)", t8LabelH: "엔탈피 h (kJ/kg)",
+    t8LabelRh: "상대습도 RH (%)", t8LabelW: "절대습도 W (kg/kg)", t8LabelTdp: "노점온도 Tdp (℃)", t8LabelH: "엔탈피 h (kJ/kg 또는 kcal/kg, 1개만 입력)", t8LabelHkJ: "kJ/kg", t8LabelHkcal: "kcal/kg",
     t8ResultLabel: "습공기 상태값",
     t8ResTdb: "건구온도", t8ResRh: "상대습도", t8ResW: "절대습도", t8ResTdp: "노점온도",
     t8ResPw: "수증기압", t8ResDensity: "밀도", t8ResV: "비체적", t8ResH: "엔탈피",
     t8Note: "표준대기압(101.325kPa) 기준 간이식(Magnus 근사식)입니다. 실제 값과 소폭 차이가 있을 수 있으므로 정밀 설계 시에는 별도 검토가 필요합니다.",
-    t8ChartTitle: "습공기 선도 (Tdb - 절대습도)", t8ChartSat: "포화선 (RH 100%)", t8ChartRhLines: "RH 20/40/60/80%", t8ChartPoint: "현재 상태점",
+    t8ChartTitle: "습공기 선도 (Tdb - 절대습도)", t8ChartSat: "포화선 (RH 100%)", t8ChartRhLines: "RH 20/40/60/80%", t8ChartPoint: "현재 상태점", t8ChartEnthalpyLines: "엔탈피선 (20kJ/kg 간격)", t8ChartDewPoint: "노점온도",
     t8ErrTdb: "건구온도(Tdb)를 입력해 주세요.",
     t8Err: "입력값을 확인해 주세요. (물리적으로 불가능한 조합이거나 값이 비어 있습니다)",
-    ph26: "예: 26", ph50: "예: 50", ph0105: "예: 0.0105", ph15b: "예: 15", ph528: "예: 52.8",
+    ph26: "예: 26", ph50: "예: 50", ph0105: "예: 0.0105", ph15b: "예: 15", ph528: "예: 52.8", ph126: "예: 12.6",
     segLabel1: "구하고자 하는 값",
     segLabelSub: "소기능 선택",
     labelUnit: "단위", labelValue: "값",
@@ -1383,15 +1391,15 @@ const I18N = {
     t8TdbLabel: "Value (℃)",
     t8SecondLabel: "Select a second input (enter only one)",
     t8ModeRh: "Relative Humidity (RH)", t8ModeW: "Absolute Humidity (kg/kg)", t8ModeTdp: "Dew Point (℃)", t8ModeH: "Enthalpy (kJ/kg)",
-    t8LabelRh: "Relative Humidity RH (%)", t8LabelW: "Absolute Humidity W (kg/kg)", t8LabelTdp: "Dew Point Tdp (℃)", t8LabelH: "Enthalpy h (kJ/kg)",
+    t8LabelRh: "Relative Humidity RH (%)", t8LabelW: "Absolute Humidity W (kg/kg)", t8LabelTdp: "Dew Point Tdp (℃)", t8LabelH: "Enthalpy h (kJ/kg or kcal/kg, enter only one)", t8LabelHkJ: "kJ/kg", t8LabelHkcal: "kcal/kg",
     t8ResultLabel: "Psychrometric state values",
     t8ResTdb: "Dry-bulb Temp", t8ResRh: "Relative Humidity", t8ResW: "Absolute Humidity", t8ResTdp: "Dew Point",
     t8ResPw: "Vapor Pressure", t8ResDensity: "Density", t8ResV: "Specific Volume", t8ResH: "Enthalpy",
     t8Note: "Simplified formula (Magnus approximation) at standard atmospheric pressure (101.325kPa). Actual values may differ slightly, so a separate review is needed for precise design.",
-    t8ChartTitle: "Psychrometric Chart (Tdb - Humidity Ratio)", t8ChartSat: "Saturation (RH 100%)", t8ChartRhLines: "RH 20/40/60/80%", t8ChartPoint: "Current state point",
+    t8ChartTitle: "Psychrometric Chart (Tdb - Humidity Ratio)", t8ChartSat: "Saturation (RH 100%)", t8ChartRhLines: "RH 20/40/60/80%", t8ChartPoint: "Current state point", t8ChartEnthalpyLines: "Enthalpy lines (20kJ/kg steps)", t8ChartDewPoint: "Dew point",
     t8ErrTdb: "Please enter the dry-bulb temperature (Tdb).",
     t8Err: "Please check your input values (the combination may be physically impossible or a value is missing).",
-    ph26: "e.g. 26", ph50: "e.g. 50", ph0105: "e.g. 0.0105", ph15b: "e.g. 15", ph528: "e.g. 52.8",
+    ph26: "e.g. 26", ph50: "e.g. 50", ph0105: "e.g. 0.0105", ph15b: "e.g. 15", ph528: "e.g. 52.8", ph126: "e.g. 12.6",
     segLabel1: "Value to solve for",
     segLabelSub: "Select function",
     labelUnit: "Unit", labelValue: "Value",
@@ -1555,15 +1563,15 @@ const I18N = {
     t8TdbLabel: "Giá trị (℃)",
     t8SecondLabel: "Chọn giá trị nhập thứ hai (chỉ nhập 1 giá trị)",
     t8ModeRh: "Độ ẩm tương đối (RH)", t8ModeW: "Độ ẩm tuyệt đối (kg/kg)", t8ModeTdp: "Điểm sương (℃)", t8ModeH: "Enthalpy (kJ/kg)",
-    t8LabelRh: "Độ ẩm tương đối RH (%)", t8LabelW: "Độ ẩm tuyệt đối W (kg/kg)", t8LabelTdp: "Điểm sương Tdp (℃)", t8LabelH: "Enthalpy h (kJ/kg)",
+    t8LabelRh: "Độ ẩm tương đối RH (%)", t8LabelW: "Độ ẩm tuyệt đối W (kg/kg)", t8LabelTdp: "Điểm sương Tdp (℃)", t8LabelH: "Enthalpy h (kJ/kg hoặc kcal/kg, chỉ nhập 1 giá trị)", t8LabelHkJ: "kJ/kg", t8LabelHkcal: "kcal/kg",
     t8ResultLabel: "Các giá trị trạng thái không khí ẩm",
     t8ResTdb: "Nhiệt độ bầu khô", t8ResRh: "Độ ẩm tương đối", t8ResW: "Độ ẩm tuyệt đối", t8ResTdp: "Điểm sương",
     t8ResPw: "Áp suất hơi nước", t8ResDensity: "Khối lượng riêng", t8ResV: "Thể tích riêng", t8ResH: "Enthalpy",
     t8Note: "Công thức đơn giản hóa (xấp xỉ Magnus) ở áp suất khí quyển tiêu chuẩn (101.325kPa). Giá trị thực tế có thể chênh lệch nhẹ, cần rà soát riêng khi thiết kế chính xác.",
-    t8ChartTitle: "Biểu đồ không khí ẩm (Tdb - Độ ẩm tuyệt đối)", t8ChartSat: "Đường bão hòa (RH 100%)", t8ChartRhLines: "RH 20/40/60/80%", t8ChartPoint: "Điểm trạng thái hiện tại",
+    t8ChartTitle: "Biểu đồ không khí ẩm (Tdb - Độ ẩm tuyệt đối)", t8ChartSat: "Đường bão hòa (RH 100%)", t8ChartRhLines: "RH 20/40/60/80%", t8ChartPoint: "Điểm trạng thái hiện tại", t8ChartEnthalpyLines: "Đường enthalpy (bước 20kJ/kg)", t8ChartDewPoint: "Điểm sương",
     t8ErrTdb: "Vui lòng nhập nhiệt độ bầu khô (Tdb).",
     t8Err: "Vui lòng kiểm tra giá trị nhập (tổ hợp có thể không khả thi về mặt vật lý hoặc thiếu giá trị).",
-    ph26: "VD: 26", ph50: "VD: 50", ph0105: "VD: 0.0105", ph15b: "VD: 15", ph528: "VD: 52.8",
+    ph26: "VD: 26", ph50: "VD: 50", ph0105: "VD: 0.0105", ph15b: "VD: 15", ph528: "VD: 52.8", ph126: "VD: 12.6",
     segLabel1: "Giá trị cần tính",
     segLabelSub: "Chọn chức năng",
     labelUnit: "Đơn vị", labelValue: "Giá trị",
@@ -2843,8 +2851,24 @@ function magnusTdp(PwKpa){
   return (243.04*ln)/(17.625-ln);
 }
 
+let psyHUpdating = false;
+function syncPsyH(from){
+  if(psyHUpdating) return;
+  psyHUpdating = true;
+  const kjEl = document.getElementById('psyH');
+  const kcalEl = document.getElementById('psyHkcal');
+  if(from === 'kj'){
+    const v = parseFloat(kjEl.value);
+    kcalEl.value = isNaN(v) ? '' : (v/4.1868).toFixed(2);
+  } else {
+    const v = parseFloat(kcalEl.value);
+    kjEl.value = isNaN(v) ? '' : (v*4.1868).toFixed(2);
+  }
+  psyHUpdating = false;
+}
+
 /* ---------- Psychrometric chart (SVG) ---------- */
-const PSY_CHART = { xMin:-10, xMax:50, yMin:0, yMax:30, vw:460, vh:300, padL:38, padR:14, padT:14, padB:32 };
+const PSY_CHART = { xMin:-10, xMax:50, yMin:0, yMax:30, vw:460, vh:320, padL:44, padR:34, padT:20, padB:34 };
 
 function psyChartXY(tdb, wGkg){
   const c = PSY_CHART;
@@ -2854,6 +2878,14 @@ function psyChartXY(tdb, wGkg){
   const yClamped = Math.max(c.yMin, Math.min(c.yMax, wGkg));
   const y = c.padT + (1 - (yClamped - c.yMin) / (c.yMax - c.yMin)) * plotH;
   return [x, y];
+}
+
+function psySatWgkgAt(tdb){
+  // saturation humidity ratio (g/kg) at a given dry-bulb temp
+  const P = 101.325;
+  const es = magnusEs(tdb);
+  if(es >= P) return PSY_CHART.yMax + 100;
+  return 0.622*es/(P-es) * 1000;
 }
 
 function psyCurvePoints(rhFrac){
@@ -2872,6 +2904,23 @@ function psyCurvePoints(rhFrac){
   return pts;
 }
 
+function psyEnthalpyPoints(h){
+  // returns [tdb, wGkg] points for a constant-enthalpy line h (kJ/kg dry air),
+  // clipped to stay at/below the saturation curve
+  const c = PSY_CHART;
+  const pts = [];
+  for(let tdb = c.xMin; tdb <= c.xMax + 0.001; tdb += 1){
+    const wKg = (h - 1.006*tdb)/(2501+1.86*tdb);
+    const wG = wKg*1000;
+    if(wG < -0.5) break;
+    const satW = psySatWgkgAt(tdb);
+    if(wG > satW) continue;
+    if(wG > c.yMax + 1) continue;
+    pts.push([tdb, Math.max(0,wG)]);
+  }
+  return pts;
+}
+
 function psyPointsToPath(pts){
   return pts.map((p,i)=>{
     const [x,y] = psyChartXY(p[0], p[1]);
@@ -2879,7 +2928,7 @@ function psyPointsToPath(pts){
   }).join(' ');
 }
 
-function renderPsyChart(pointTdb, pointWgkg){
+function renderPsyChart(pointTdb, pointWgkg, pointTdp, pointH){
   const c = PSY_CHART;
   const wrap = document.getElementById('psyChartWrap');
   if(!wrap) return;
@@ -2888,7 +2937,7 @@ function renderPsyChart(pointTdb, pointWgkg){
 
   // gridlines + axis ticks
   const xTicks = [-10,0,10,20,30,40,50];
-  const yTicks = [0,10,20,30];
+  const yTicksKg = [0,0.005,0.010,0.015,0.020,0.025,0.030];
   xTicks.forEach(tx=>{
     const [gx] = psyChartXY(tx, c.yMin);
     const [,gy0] = psyChartXY(tx, c.yMax);
@@ -2896,15 +2945,29 @@ function renderPsyChart(pointTdb, pointWgkg){
     svg += `<line x1="${gx.toFixed(1)}" y1="${gy0.toFixed(1)}" x2="${gx.toFixed(1)}" y2="${gy1.toFixed(1)}" stroke="rgba(148,197,230,0.12)" stroke-width="1"/>`;
     svg += `<text x="${gx.toFixed(1)}" y="${(c.vh-c.padB+16).toFixed(1)}" font-size="9.5" fill="#8CA3BC" text-anchor="middle" font-family="monospace">${tx}</text>`;
   });
-  yTicks.forEach(ty=>{
-    const [gx0, gy] = psyChartXY(c.xMin, ty);
-    const [gx1] = psyChartXY(c.xMax, ty);
+  yTicksKg.forEach(tyKg=>{
+    const tyG = tyKg*1000;
+    const [gx0, gy] = psyChartXY(c.xMin, tyG);
+    const [gx1] = psyChartXY(c.xMax, tyG);
     svg += `<line x1="${gx0.toFixed(1)}" y1="${gy.toFixed(1)}" x2="${gx1.toFixed(1)}" y2="${gy.toFixed(1)}" stroke="rgba(148,197,230,0.12)" stroke-width="1"/>`;
-    svg += `<text x="${(c.padL-8).toFixed(1)}" y="${(gy+3).toFixed(1)}" font-size="9.5" fill="#8CA3BC" text-anchor="end" font-family="monospace">${ty}</text>`;
+    svg += `<text x="${(c.vw-c.padR+6).toFixed(1)}" y="${(gy+3).toFixed(1)}" font-size="9" fill="#8CA3BC" text-anchor="start" font-family="monospace">${tyKg.toFixed(3)}</text>`;
   });
   // axis labels
   svg += `<text x="${(c.padL + (c.vw-c.padL-c.padR)/2).toFixed(1)}" y="${(c.vh-4).toFixed(1)}" font-size="10" fill="#8CA3BC" text-anchor="middle" font-family="monospace">Tdb (℃)</text>`;
-  svg += `<text x="12" y="${(c.padT+(c.vh-c.padT-c.padB)/2).toFixed(1)}" font-size="10" fill="#8CA3BC" text-anchor="middle" font-family="monospace" transform="rotate(-90 12 ${(c.padT+(c.vh-c.padT-c.padB)/2).toFixed(1)})">W (g/kg)</text>`;
+  svg += `<text x="${(c.vw-c.padR).toFixed(1)}" y="${(c.padT-4).toFixed(1)}" font-size="8.5" fill="#8CA3BC" text-anchor="end" font-family="monospace">W (kg/kg)</text>`;
+
+  // constant-enthalpy reference lines (20 kJ/kg steps), labeled near where they meet the saturation curve
+  for(let h=0; h<=120; h+=20){
+    const pts = psyEnthalpyPoints(h);
+    if(pts.length < 2) continue;
+    svg += `<path d="${psyPointsToPath(pts)}" fill="none" stroke="#B97A4A" stroke-width="0.7" stroke-dasharray="1,2.5" opacity="0.8"/>`;
+    const first = pts[0];
+    const [lx,ly] = psyChartXY(first[0], first[1]);
+    const labelInside = first[0] > c.xMin + 0.5;
+    if(labelInside){
+      svg += `<text x="${(lx-2).toFixed(1)}" y="${(ly-4).toFixed(1)}" font-size="7.5" fill="#C99169" text-anchor="end" font-family="monospace">${h}</text>`;
+    }
+  }
 
   // RH reference curves (20/40/60/80%)
   [0.2,0.4,0.6,0.8].forEach(rh=>{
@@ -2918,9 +2981,25 @@ function renderPsyChart(pointTdb, pointWgkg){
     const [px, py] = psyChartXY(pointTdb, pointWgkg);
     const [ax] = psyChartXY(c.xMin, 0);
     const [,ay] = psyChartXY(0, c.yMin);
+
+    // dew point: horizontal line from point to saturation curve, then drop to x-axis
+    if(typeof pointTdp === 'number' && !isNaN(pointTdp)){
+      const [tdpX, tdpY] = psyChartXY(pointTdp, pointWgkg);
+      svg += `<line x1="${px.toFixed(1)}" y1="${py.toFixed(1)}" x2="${tdpX.toFixed(1)}" y2="${tdpY.toFixed(1)}" stroke="#97CE4C" stroke-width="1" stroke-dasharray="3,3"/>`;
+      svg += `<line x1="${tdpX.toFixed(1)}" y1="${tdpY.toFixed(1)}" x2="${tdpX.toFixed(1)}" y2="${ay.toFixed(1)}" stroke="#97CE4C" stroke-width="1" stroke-dasharray="3,3"/>`;
+      svg += `<circle cx="${tdpX.toFixed(1)}" cy="${tdpY.toFixed(1)}" r="3" fill="#97CE4C"/>`;
+      svg += `<text x="${tdpX.toFixed(1)}" y="${(ay+11).toFixed(1)}" font-size="8.5" fill="#97CE4C" text-anchor="middle" font-family="monospace">Tdp ${pointTdp.toFixed(1)}</text>`;
+    }
+
+    // guide lines to axes for the state point
     svg += `<line x1="${px.toFixed(1)}" y1="${py.toFixed(1)}" x2="${px.toFixed(1)}" y2="${ay.toFixed(1)}" stroke="#FF7A33" stroke-width="1" stroke-dasharray="3,3"/>`;
-    svg += `<line x1="${px.toFixed(1)}" y1="${py.toFixed(1)}" x2="${ax.toFixed(1)}" y2="${py.toFixed(1)}" stroke="#FF7A33" stroke-width="1" stroke-dasharray="3,3"/>`;
+    svg += `<line x1="${px.toFixed(1)}" y1="${py.toFixed(1)}" x2="${(c.vw-c.padR).toFixed(1)}" y2="${py.toFixed(1)}" stroke="#FF7A33" stroke-width="1" stroke-dasharray="3,3"/>`;
     svg += `<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4.5" fill="#FF7A33" stroke="#23120A" stroke-width="1"/>`;
+
+    // enthalpy label near the point, along the enthalpy-line direction
+    if(typeof pointH === 'number' && !isNaN(pointH)){
+      svg += `<text x="${(px+8).toFixed(1)}" y="${(py-8).toFixed(1)}" font-size="9" fill="#FF7A33" font-family="monospace">h ${pointH.toFixed(1)}kJ/kg</text>`;
+    }
   }
 
   svg += `</svg>`;
@@ -2991,8 +3070,12 @@ function calcPsy(){
     if(isNaN(tdp) || tdp > Tdb + 0.001){ showPsyErr(); return; }
     Pw = magnusEs(tdp);
   } else if(psyMode === 'h'){
-    const h = parseFloat(document.getElementById('psyH').value);
-    if(isNaN(h)){ showPsyErr(); return; }
+    const hKj = parseFloat(document.getElementById('psyH').value);
+    const hKcal = parseFloat(document.getElementById('psyHkcal').value);
+    let h;
+    if(!isNaN(hKj)) h = hKj;
+    else if(!isNaN(hKcal)) h = hKcal * 4.1868;
+    else { showPsyErr(); return; }
     const w = (h - 1.006*Tdb)/(2501+1.86*Tdb);
     if(w <= 0 || !isFinite(w)){ showPsyErr(); return; }
     Pw = P*w/(0.622+w);
@@ -3011,7 +3094,7 @@ function calcPsy(){
 
   const fmt = (val,d)=> val.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 
-  renderPsyChart(Tdb, W*1000);
+  renderPsyChart(Tdb, W*1000, Tdp, h_kJ);
 
   gridEl.innerHTML = `
     <div class="psy-result-cell"><div class="lbl">${t('t8ResTdb')}</div><div class="val">${fmt(Tdb,1)}<span class="unit">℃</span></div></div>
