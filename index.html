@@ -2868,7 +2868,40 @@ function syncPsyH(from){
 }
 
 /* ---------- Psychrometric chart (SVG) ---------- */
-const PSY_CHART = { xMin:-10, xMax:50, yMin:0, yMax:30, vw:460, vh:320, padL:44, padR:34, padT:20, padB:34 };
+const PSY_CHART_DEFAULT = { xMin:-10, xMax:50, yMin:0, yMax:30 };
+const PSY_CHART = { ...PSY_CHART_DEFAULT, vw:460, vh:320, padL:44, padR:34, padT:20, padB:34 };
+
+// Pick the smallest step (from candidates) that keeps the number of ticks within maxTicks
+function psyNiceStep(range, candidates, maxTicks){
+  for(const step of candidates){
+    if(range / step <= maxTicks) return step;
+  }
+  return candidates[candidates.length - 1];
+}
+
+// Expand the chart's Tdb / W range only as far as needed so a state point beyond the
+// default 50℃ (or 30 g/kg) stays visible; stays at the default range otherwise.
+function updatePsyChartExtents(tdb, wGkgPoint){
+  const c = PSY_CHART;
+  const neededXMax = Math.ceil((tdb + 5) / 10) * 10; // small margin past the input value
+  c.xMax = Math.max(PSY_CHART_DEFAULT.xMax, neededXMax);
+  c.xMin = PSY_CHART_DEFAULT.xMin;
+
+  let neededYMax = PSY_CHART_DEFAULT.yMax;
+  if(typeof wGkgPoint === 'number' && isFinite(wGkgPoint)){
+    neededYMax = Math.ceil((wGkgPoint * 1.15) / 5) * 5; // margin above the state point
+  }
+  c.yMax = Math.max(PSY_CHART_DEFAULT.yMax, neededYMax);
+  c.yMin = PSY_CHART_DEFAULT.yMin;
+}
+
+function resetPsyChartExtents(){
+  const c = PSY_CHART;
+  c.xMin = PSY_CHART_DEFAULT.xMin;
+  c.xMax = PSY_CHART_DEFAULT.xMax;
+  c.yMin = PSY_CHART_DEFAULT.yMin;
+  c.yMax = PSY_CHART_DEFAULT.yMax;
+}
 
 function psyChartXY(tdb, wGkg){
   const c = PSY_CHART;
@@ -2935,9 +2968,14 @@ function renderPsyChart(pointTdb, pointWgkg, pointTdp, pointH){
 
   let svg = `<svg viewBox="0 0 ${c.vw} ${c.vh}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // gridlines + axis ticks
-  const xTicks = [-10,0,10,20,30,40,50];
-  const yTicksKg = [0,0.005,0.010,0.015,0.020,0.025,0.030];
+  // gridlines + axis ticks (step widens automatically as the range grows)
+  const xStep = psyNiceStep(c.xMax - c.xMin, [10,20,25,50], 8);
+  const xTicks = [];
+  for(let tx = Math.ceil(c.xMin / xStep) * xStep; tx <= c.xMax + 0.001; tx += xStep) xTicks.push(tx);
+
+  const yStepG = psyNiceStep(c.yMax - c.yMin, [5,10,20,25,50,100], 7);
+  const yTicksKg = [];
+  for(let tyG = c.yMin; tyG <= c.yMax + 0.001; tyG += yStepG) yTicksKg.push(tyG / 1000);
   xTicks.forEach(tx=>{
     const [gx] = psyChartXY(tx, c.yMin);
     const [,gy0] = psyChartXY(tx, c.yMax);
@@ -2957,7 +2995,8 @@ function renderPsyChart(pointTdb, pointWgkg, pointTdp, pointH){
   svg += `<text x="${(c.vw-c.padR).toFixed(1)}" y="${(c.padT-4).toFixed(1)}" font-size="8.5" fill="#8CA3BC" text-anchor="end" font-family="monospace">W (kg/kg)</text>`;
 
   // constant-enthalpy reference lines (20 kJ/kg steps), labeled near where they meet the saturation curve
-  for(let h=0; h<=120; h+=20){
+  const hMaxLine = Math.max(120, Math.ceil((1.006*c.xMax + (c.yMax/1000)*(2501+1.86*c.xMax)) / 20) * 20);
+  for(let h=0; h<=hMaxLine; h+=20){
     const pts = psyEnthalpyPoints(h);
     if(pts.length < 2) continue;
     svg += `<path d="${psyPointsToPath(pts)}" fill="none" stroke="#B97A4A" stroke-width="0.7" stroke-dasharray="1,2.5" opacity="0.8"/>`;
@@ -3030,6 +3069,7 @@ function resetPsyUI(){
   const resEl = document.getElementById('resultPsy');
   if(gridEl) gridEl.innerHTML = '';
   if(resEl) resEl.classList.remove('show','error');
+  resetPsyChartExtents();
   renderPsyChart(null, null);
 }
 
@@ -3094,6 +3134,7 @@ function calcPsy(){
 
   const fmt = (val,d)=> val.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
 
+  updatePsyChartExtents(Tdb, W*1000);
   renderPsyChart(Tdb, W*1000, Tdp, h_kJ);
 
   gridEl.innerHTML = `
