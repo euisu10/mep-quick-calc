@@ -324,6 +324,29 @@
   .vol-live strong{ color: var(--cyan); font-size: 13.5px; }
   .vol-live.empty strong{ color: var(--muted); }
 
+  .alloc-sum-live{
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--cyan);
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .alloc-live-amount{
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--bg-deep);
+    border: 1px solid var(--line-strong);
+    color: var(--cyan);
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 9px 10px;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+  }
+  .alloc-live-amount.empty{ color: var(--muted); }
+
   .shape-toggle{ display:flex; gap: 8px; margin-bottom: 10px; }
   .shape-toggle button{
     background: var(--bg-deep);
@@ -803,13 +826,14 @@
   <section class="panel" id="t2">
     <button class="panel-reset-btn" onclick="resetPanel('t2')" title="초기화"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 2.6 6.4M3 12V6m0 6h6"/></svg><span class="reset-label" data-i18n="btnReset">초기화</span></button>
     <h2><svg class="ic-lg" viewBox="0 0 24 24"><path d="M6 2h9l3 3v17H6z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></svg> <span data-i18n="t2Title">견적 계산</span></h2>
-    <div class="formula" data-i18n="t2Formula">① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산</div>
+    <div class="formula" data-i18n="t2Formula">① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산 · ④ 항목별 금액</div>
 
     <div class="seg-label" data-i18n="segLabelSub">소기능 선택</div>
     <div class="seg">
       <button class="seg-t2 active" data-sub="cmp"><svg class="ic" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" rx="1"/><line x1="7" y1="7" x2="7" y2="11"/><line x1="11" y1="7" x2="11" y2="11"/><line x1="15" y1="7" x2="15" y2="11"/><line x1="19" y1="7" x2="19" y2="11"/></svg> <span data-i18n="t2Seg1">① 수치비교</span></button>
       <button class="seg-t2" data-sub="rate"><svg class="ic" viewBox="0 0 24 24"><polyline points="3 17 9 11 13 15 21 5"/><polyline points="14 5 21 5 21 12"/></svg> <span data-i18n="t2Seg2">② 요율적용</span></button>
       <button class="seg-t2" data-sub="target"><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="0.9" fill="currentColor" stroke="none"/></svg> <span data-i18n="t2Seg3">③ 목표금액</span></button>
+      <button class="seg-t2" data-sub="alloc"><svg class="ic" viewBox="0 0 24 24"><path d="M4 21V10M12 21V3M20 21v-7"/></svg> <span data-i18n="t2Seg4">④ 항목별 금액</span></button>
     </div>
 
     <!-- ① 수치 비교 -->
@@ -882,6 +906,35 @@
 
       <button class="calc-btn" onclick="calcTarget()"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg> <span data-i18n="btnCalc">계산하기</span></button>
       <div class="result" id="resultTarget"></div>
+    </div>
+
+    <!-- ④ 항목별 금액 배분 -->
+    <div class="sub2" id="sub2-alloc" style="display:none;">
+      <h2 style="font-size:15px;margin:0 0 4px;"><svg class="ic-lg" style="width:18px;height:18px" viewBox="0 0 24 24"><path d="M4 21V10M12 21V3M20 21v-7"/></svg> <span data-i18n="allocTitle">항목별 금액 배분</span></h2>
+      <div class="formula" data-i18n="allocFormula">항목 배분금액 = 전체 금액 × (항목 기준값 ÷ 기준값 합계)</div>
+
+      <div class="field-group">
+        <div class="row">
+          <div class="field">
+            <label data-i18n="allocCountLabel">항목 개수</label>
+            <select id="allocCount" onchange="generateAllocRows()">
+              <option value="2">2</option><option value="3" selected>3</option>
+              <option value="4">4</option><option value="5">5</option>
+              <option value="6">6</option><option value="7">7</option>
+              <option value="8">8</option><option value="9">9</option>
+              <option value="10">10</option>
+            </select>
+          </div>
+          <div class="field"><label data-i18n="allocTotalLabel">전체 금액</label><input type="number" id="allocTotal" placeholder="예: 100000000" data-i18n-ph="ph1e8" oninput="updateAllocLive()"></div>
+        </div>
+      </div>
+
+      <div class="seg-label" style="display:flex; justify-content:space-between; align-items:baseline;"><span data-i18n="allocItemsLabel">항목별 기준값 입력</span><span class="alloc-sum-live" id="allocSumLive"></span></div>
+      <div id="allocItemList"></div>
+
+      <button class="calc-btn" onclick="calcAlloc()"><svg class="ic" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="8" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="16" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="12" y2="18"/></svg> <span data-i18n="btnCalc">계산하기</span></button>
+      <div class="result" id="resultAlloc"></div>
+      <div class="pipe-table-wrap" id="allocTableWrap" style="display:none;"><table class="pipe-table" id="allocTable"></table></div>
     </div>
   </section>
 
@@ -1321,8 +1374,14 @@ const I18N = {
 
     // TAB2
     t2Title: "견적 계산",
-    t2Formula: "① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산",
-    t2Seg1: "① 수치비교", t2Seg2: "② 요율적용", t2Seg3: "③ 목표금액",
+    t2Formula: "① 수치 비교 · ② 요율 적용 · ③ 목표 금액 역산 · ④ 항목별 금액",
+    t2Seg1: "① 수치비교", t2Seg2: "② 요율적용", t2Seg3: "③ 목표금액", t2Seg4: "④ 항목별 금액",
+    allocTitle: "항목별 금액 배분", allocFormula: "항목 배분금액 = 전체 금액 × (항목 기준값 ÷ 기준값 합계)",
+    allocCountLabel: "항목 개수", allocTotalLabel: "전체 금액", allocItemsLabel: "항목별 기준값 입력",
+    allocItemNameLabel: "항목", allocItemNamePh: "항목", allocItemValueLabel: "기준값", allocItemValuePh: "예: 10",
+    allocColItem: "항목", allocColValue: "기준값", allocColRatio: "비율", allocColAmount: "배분 금액",
+    allocSub: "항목 {count}개 · 기준값 합계 {sum}", allocSumPrefix: "합계",
+    err_alloc_input: "전체 금액과 항목별 기준값을 확인해 주세요.",
     cmpTitle: "수치 비교 (증감률)",
     labelInputValues: "입력값",
     labelA_base: "A (기준값)", labelB_compare: "B (비교값)",
@@ -1498,8 +1557,14 @@ const I18N = {
     labelOneSide: "One side (mm)", labelOtherSide: "Other side (mm)",
 
     t2Title: "Estimate Calculation",
-    t2Formula: "① Compare Values · ② Apply Rate · ③ Back-calc Target Amount",
-    t2Seg1: "① Compare", t2Seg2: "② Apply Rate", t2Seg3: "③ Target Amount",
+    t2Formula: "① Compare Values · ② Apply Rate · ③ Back-calc Target Amount · ④ Item Allocation",
+    t2Seg1: "① Compare", t2Seg2: "② Apply Rate", t2Seg3: "③ Target Amount", t2Seg4: "④ Item Allocation",
+    allocTitle: "Item-wise Amount Allocation", allocFormula: "Item amount = Total × (Item value ÷ Sum of values)",
+    allocCountLabel: "Number of items", allocTotalLabel: "Total amount", allocItemsLabel: "Enter each item's value",
+    allocItemNameLabel: "Item", allocItemNamePh: "Item", allocItemValueLabel: "Value", allocItemValuePh: "e.g. 10",
+    allocColItem: "Item", allocColValue: "Value", allocColRatio: "Ratio", allocColAmount: "Allocated Amount",
+    allocSub: "{count} items · sum of values {sum}", allocSumPrefix: "Sum",
+    err_alloc_input: "Please check the total amount and each item's value.",
     cmpTitle: "Value Comparison (Rate of Change)",
     labelInputValues: "Input values",
     labelA_base: "A (Base value)", labelB_compare: "B (Compare value)",
@@ -1672,8 +1737,14 @@ const I18N = {
     labelOneSide: "Một cạnh (mm)", labelOtherSide: "Cạnh còn lại (mm)",
 
     t2Title: "Tính toán báo giá",
-    t2Formula: "① So sánh số liệu · ② Áp dụng tỷ lệ · ③ Tính ngược số tiền mục tiêu",
-    t2Seg1: "① So sánh", t2Seg2: "② Áp dụng tỷ lệ", t2Seg3: "③ Số tiền mục tiêu",
+    t2Formula: "① So sánh số liệu · ② Áp dụng tỷ lệ · ③ Tính ngược số tiền mục tiêu · ④ Phân bổ theo mục",
+    t2Seg1: "① So sánh", t2Seg2: "② Áp dụng tỷ lệ", t2Seg3: "③ Số tiền mục tiêu", t2Seg4: "④ Phân bổ theo mục",
+    allocTitle: "Phân bổ số tiền theo mục", allocFormula: "Số tiền mục = Tổng số tiền × (Giá trị mục ÷ Tổng giá trị)",
+    allocCountLabel: "Số lượng mục", allocTotalLabel: "Tổng số tiền", allocItemsLabel: "Nhập giá trị từng mục",
+    allocItemNameLabel: "Mục", allocItemNamePh: "Mục", allocItemValueLabel: "Giá trị", allocItemValuePh: "VD: 10",
+    allocColItem: "Mục", allocColValue: "Giá trị", allocColRatio: "Tỷ lệ", allocColAmount: "Số tiền phân bổ",
+    allocSub: "{count} mục · tổng giá trị {sum}", allocSumPrefix: "Tổng",
+    err_alloc_input: "Vui lòng kiểm tra tổng số tiền và giá trị từng mục.",
     cmpTitle: "So sánh số liệu (Tỷ lệ thay đổi)",
     labelInputValues: "Giá trị nhập",
     labelA_base: "A (Giá trị gốc)", labelB_compare: "B (Giá trị so sánh)",
@@ -1952,6 +2023,10 @@ function resetPanel(id){
   if(id === 't8'){
     resetPsyUI();
   }
+  if(id === 't2' && typeof generateAllocRows === 'function'){
+    document.getElementById('allocCount').value = '3';
+    generateAllocRows();
+  }
 }
 
 /* ---------- TAB 1 logic ---------- */
@@ -2089,7 +2164,7 @@ document.querySelectorAll('.seg-t2').forEach(btn=>{
     document.querySelectorAll('.seg-t2').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     const sub = btn.dataset.sub;
-    ['cmp','rate','target'].forEach(key=>{
+    ['cmp','rate','target','alloc'].forEach(key=>{
       document.getElementById('sub2-'+key).style.display = (key===sub) ? 'block' : 'none';
     });
   });
@@ -2213,6 +2288,106 @@ function calcTarget(){
       `<div class="result-value">${rate.toFixed(2)}% (${dirLabel})</div>` +
       `<div class="result-sub">${tf('tgtRateSub', {diff: fmtMoney(Math.abs(diff)), current: fmtMoney(current), goal: fmtMoney(goal), dir: dirLabel, rate: rate.toFixed(2)})}</div>`;
   }
+}
+
+/* ---------- ④ 항목별 금액 배분 ---------- */
+function generateAllocRows(){
+  const count = parseInt(document.getElementById('allocCount').value, 10);
+  const wrap = document.getElementById('allocItemList');
+  let html = '';
+  for(let i=1;i<=count;i++){
+    html += `<div class="field-group" data-idx="${i}">
+      <div class="row">
+        <div class="field"><label>${t('allocItemNameLabel')} ${i} — ${t('allocItemValueLabel')}</label><input type="number" class="alloc-value" data-idx="${i}" placeholder="${t('allocItemValuePh')}" oninput="updateAllocLive()"></div>
+        <div class="field"><label>${t('allocColAmount')}</label><div class="alloc-live-amount empty" id="allocLive${i}">—</div></div>
+      </div>
+    </div>`;
+  }
+  wrap.innerHTML = html;
+  clearAllocResult();
+  updateAllocLive();
+}
+generateAllocRows();
+
+function clearAllocResult(){
+  document.getElementById('resultAlloc').classList.remove('show','error');
+  document.getElementById('allocTableWrap').style.display = 'none';
+}
+
+function updateAllocLive(){
+  clearAllocResult();
+  const total = parseFloat(document.getElementById('allocTotal').value);
+  const valueEls = Array.from(document.querySelectorAll('.alloc-value'));
+  const values = valueEls.map(ve=>{
+    const v = parseFloat(ve.value);
+    return isNaN(v) ? 0 : v;
+  });
+  const sum = values.reduce((s,v)=>s+v, 0);
+
+  const sumEl = document.getElementById('allocSumLive');
+  if(sum > 0){
+    sumEl.textContent = `(${t('allocSumPrefix')} ${sum.toLocaleString('en-US')})`;
+  } else {
+    sumEl.textContent = '';
+  }
+
+  valueEls.forEach((ve, i)=>{
+    const idx = ve.dataset.idx;
+    const box = document.getElementById('allocLive'+idx);
+    if(!box) return;
+    const v = values[i];
+    if(!isNaN(total) && sum > 0 && v > 0){
+      const amount = total * (v / sum);
+      box.classList.remove('empty');
+      box.textContent = fmtMoney(amount);
+    } else {
+      box.classList.add('empty');
+      box.textContent = '—';
+    }
+  });
+}
+
+function calcAlloc(){
+  const el = document.getElementById('resultAlloc');
+  const tableWrap = document.getElementById('allocTableWrap');
+  const table = document.getElementById('allocTable');
+  el.classList.remove('error');
+
+  const total = parseFloat(document.getElementById('allocTotal').value);
+  const valueEls = Array.from(document.querySelectorAll('.alloc-value'));
+
+  const items = [];
+  let anyInvalid = false;
+  valueEls.forEach((ve, i)=>{
+    const v = parseFloat(ve.value);
+    if(ve.value.trim() !== '' && (isNaN(v) || v < 0)) anyInvalid = true;
+    const name = `${t('allocItemNameLabel')} ${i+1}`;
+    items.push({ name, value: isNaN(v) ? 0 : v });
+  });
+
+  if(isNaN(total) || anyInvalid || items.every(it=>it.value === 0)){
+    el.classList.add('show','error');
+    el.innerHTML = `<div class="result-label"><svg class="ic-sm" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><line x1="12" y1="9" x2="12" y2="13.5"/><circle cx="12" cy="16.5" r="0.9" fill="currentColor" stroke="none"/></svg> ERROR</div><div class="result-value">${t('err_alloc_input')}</div>`;
+    tableWrap.style.display = 'none';
+    return;
+  }
+
+  const sum = items.reduce((s, it)=> s + it.value, 0);
+
+  let rows = '';
+  items.forEach(it=>{
+    const ratio = sum > 0 ? (it.value / sum) * 100 : 0;
+    const amount = sum > 0 ? total * (it.value / sum) : 0;
+    rows += `<tr><td>${it.name}</td><td>${it.value.toLocaleString('en-US')}</td><td>${ratio.toFixed(1)}%</td><td>${fmtMoney(amount)}</td></tr>`;
+  });
+
+  table.innerHTML = `<thead><tr><th>${t('allocColItem')}</th><th>${t('allocColValue')}</th><th>${t('allocColRatio')}</th><th>${t('allocColAmount')}</th></tr></thead><tbody>${rows}</tbody>`;
+  tableWrap.style.display = 'block';
+
+  el.classList.add('show');
+  el.innerHTML = `<div class="result-label"><svg class="ic-sm" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="7.5 12.5 10.5 15.5 16.5 8.5"/></svg> RESULT</div>` +
+    `<div class="result-value">${fmtMoney(total)}</div>` +
+    `<div class="result-sub">${tf('allocSub', {count: items.length, sum: sum.toLocaleString('en-US')})}</div>`;
 }
 
 
