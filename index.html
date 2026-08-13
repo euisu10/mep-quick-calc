@@ -310,6 +310,20 @@
   .ach-preview.empty{ color: var(--muted); }
   .ach-preview .cmm-line{ font-size: 11px; color: var(--muted); margin-top: 2px; }
 
+  .vol-live{
+    margin-top: 10px;
+    background: rgba(53,192,238,0.06);
+    border: 1px solid var(--line);
+    color: var(--cyan);
+    font-family: var(--mono);
+    font-size: 12.5px;
+    line-height: 1.4;
+    padding: 8px 10px;
+  }
+  .vol-live.empty{ color: var(--muted); }
+  .vol-live strong{ color: var(--cyan); font-size: 13.5px; }
+  .vol-live.empty strong{ color: var(--muted); }
+
   .shape-toggle{ display:flex; gap: 8px; margin-bottom: 10px; }
   .shape-toggle button{
     background: var(--bg-deep);
@@ -396,8 +410,8 @@
     border-radius: 10px;
     overflow: hidden;
     position: relative;
-    background: #202226;
-    min-height: 170px;
+    background: var(--panel);
+    min-height: 145px;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -405,23 +419,24 @@
   .footer-banner-photo{
     position: absolute;
     inset: 0;
-    background-color: #202226;
+    background-color: var(--panel);
     background-image: var(--footer-photo-url);
     background-size: cover;
-    background-position: center 8%;
+    background-position: center 12%;
   }
   .footer-banner::before{
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, #202226 0%, #202226 30%, rgba(32,34,38,0.6) 48%, rgba(32,34,38,0.15) 64%, transparent 80%);
+    background: linear-gradient(90deg, var(--panel) 0%, var(--panel) 28%, rgba(29,33,40,0.55) 46%, rgba(29,33,40,0.12) 62%, transparent 78%);
     z-index: 1;
   }
-  .footer-banner-text{ position: relative; z-index: 2; padding: 18px 22px; }
+  .footer-banner-text{ position: relative; z-index: 2; padding: 16px 22px; }
   @media (max-width: 480px){
-    .footer-banner{ min-height: 130px; }
-    .footer-banner-text{ padding: 14px 16px; }
-    .footer-banner::before{ background: linear-gradient(90deg, #202226 0%, #202226 40%, rgba(32,34,38,0.65) 56%, rgba(32,34,38,0.2) 72%, transparent 88%); }
+    .footer-banner{ min-height: 105px; }
+    .footer-banner-text{ padding: 12px 16px; }
+    .footer-banner::before{ background: linear-gradient(90deg, var(--panel) 0%, var(--panel) 38%, rgba(29,33,40,0.6) 54%, rgba(29,33,40,0.18) 70%, transparent 86%); }
+    .footer-banner::after{ background: linear-gradient(90deg, transparent 0%, transparent 22%, var(--panel) 38%, transparent 68%); }
   }
 
   /* Reference info panel (text-only, styled differently from source photo) */
@@ -941,7 +956,7 @@
   <!-- ===================== TAB 5 : 필터(BFU/FFU) 수량 산출 ===================== -->
   <section class="panel" id="t5">
     <button class="panel-reset-btn" onclick="resetPanel('t5')" title="초기화"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 1 2.6 6.4M3 12V6m0 6h6"/></svg><span class="reset-label" data-i18n="btnReset">초기화</span></button>
-    <h2><svg class="ic-lg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="13" rx="1.5"/><line x1="3" y1="7.3" x2="21" y2="7.3"/><line x1="3" y1="11.7" x2="21" y2="11.7"/><path d="M8 19l1.5 3M12 19l0 3M16 19l-1.5 3"/></svg> <span data-i18n="t5Title">필터(BFU · FFU) 수량 산출</span></h2>
+    <h2><svg class="ic-lg" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="13" rx="1.5"/><line x1="3" y1="7.3" x2="21" y2="7.3"/><line x1="3" y1="11.7" x2="21" y2="11.7"/><path d="M8 19l1.5 3M12 19l0 3M16 19l-1.5 3"/></svg> <span data-i18n="t5Title">필터(BFU · FFU · HFB) 수량 산출</span></h2>
     <div class="formula" data-i18n="t5Formula">필요풍량(CMH) = 룸 체적(m³) × 환기횟수(회/hr) &nbsp;→&nbsp; 필터 대수 = 필요풍량 ÷ 필터 1대당 풍량</div>
 
     <div class="ref-panel">
@@ -979,6 +994,7 @@
         <div class="field"><label data-i18n="labelLengthM">세로 (m)</label><input type="number" id="rmLength" placeholder="예: 8" data-i18n-ph="ph8" oninput="updateAchPreview()"></div>
         <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightWH" placeholder="예: 3" data-i18n-ph="ph3" oninput="updateAchPreview()"></div>
       </div>
+      <div class="vol-live empty" id="volPreviewWH" data-i18n="volLiveEmpty">가로·세로·천정고를 입력하면 체적이 자동 계산됩니다.</div>
     </div>
 
     <div class="field-group" id="vol-ah-fields" style="display:none;">
@@ -987,6 +1003,7 @@
         <div class="field"><label data-i18n="labelAreaM2">면적 (m²)</label><input type="number" id="rmArea" placeholder="예: 80" data-i18n-ph="ph80" oninput="updateAchPreview()"></div>
         <div class="field"><label data-i18n="labelCeilingM">천정고 (m)</label><input type="number" id="rmHeightAH" placeholder="예: 3" data-i18n-ph="ph3" oninput="updateAchPreview()"></div>
       </div>
+      <div class="vol-live empty" id="volPreviewAH" data-i18n="volLiveEmptyAH">면적·천정고를 입력하면 체적이 자동 계산됩니다.</div>
     </div>
 
     <div class="field-group" id="vol-v-fields" style="display:none;">
@@ -1342,7 +1359,7 @@ const I18N = {
     err_t4_zero: "{letter}값이 0이면 계산할 수 없습니다.",
 
     // TAB5
-    t5Title: "필터(BFU · FFU) 수량 산출",
+    t5Title: "필터(BFU · FFU · HFB) 수량 산출",
     t5Formula: "필요풍량(CMH) = 룸 체적(m³) × 환기횟수(회/hr) &nbsp;→&nbsp; 필터 대수 = 필요풍량 ÷ 필터 1대당 풍량",
     refPanelTitle: "참조 : CLASS별 환기횟수 기준",
     refColH1: "클린 환기 (CLASS 기준)", refColH2: "공조 환기 (온도편차 기준)",
@@ -1352,6 +1369,7 @@ const I18N = {
     refNote: "Class 1~100은 필터 면풍속 0.25~0.45 m/s 기준으로 별도 검토. 위 수치는 참고용이며, 실제 값은 프로젝트 기준에 맞춰 아래 입력란에 직접 입력하세요.",
     volMethodLabel: "룸 체적 입력 방식",
     volMethod1: "가로·세로 + 천정고", volMethod2: "면적(m²) + 천정고", volMethod3: "체적(m³) 직접입력",
+    volLivePrefix: "체적", volLiveEmpty: "가로·세로·천정고를 입력하면 체적이 자동 계산됩니다.", volLiveEmptyAH: "면적·천정고를 입력하면 체적이 자동 계산됩니다.",
     fgTitleWH: "가로 · 세로 · 천정고", labelWidthM: "가로 (m)", labelLengthM: "세로 (m)", labelCeilingM: "천정고 (m)",
     fgTitleAH: "면적 · 천정고", labelAreaM2: "면적 (m²)",
     fgTitleV: "체적 직접입력", labelVolumeM3: "체적 (m³)",
@@ -1515,7 +1533,7 @@ const I18N = {
     err_t4_missing: "Please enter values for {known}.",
     err_t4_zero: "Cannot calculate when {letter} is 0.",
 
-    t5Title: "Filter (BFU · FFU) Quantity Calculation",
+    t5Title: "Filter (BFU · FFU · HFB) Quantity Calculation",
     t5Formula: "Required airflow (CMH) = Room volume (m³) × ACH (times/hr) &nbsp;→&nbsp; Filter qty = Required airflow ÷ Airflow per filter",
     refPanelTitle: "Reference: ACH by CLASS",
     refColH1: "Clean room ventilation (by CLASS)", refColH2: "HVAC ventilation (by temp. deviation)",
@@ -1525,6 +1543,7 @@ const I18N = {
     refNote: "For Class 1-100, review separately based on filter face velocity 0.25-0.45 m/s. The figures above are for reference only — enter the actual project values in the fields below.",
     volMethodLabel: "Room volume input method",
     volMethod1: "Width·Length + Ceiling height", volMethod2: "Area (m²) + Ceiling height", volMethod3: "Direct volume (m³) input",
+    volLivePrefix: "Volume", volLiveEmpty: "Enter width, length and ceiling height to auto-calculate the volume.", volLiveEmptyAH: "Enter area and ceiling height to auto-calculate the volume.",
     fgTitleWH: "Width · Length · Ceiling height", labelWidthM: "Width (m)", labelLengthM: "Length (m)", labelCeilingM: "Ceiling height (m)",
     fgTitleAH: "Area · Ceiling height", labelAreaM2: "Area (m²)",
     fgTitleV: "Direct volume input", labelVolumeM3: "Volume (m³)",
@@ -1688,7 +1707,7 @@ const I18N = {
     err_t4_missing: "Vui lòng nhập đầy đủ giá trị {known}.",
     err_t4_zero: "Không thể tính khi {letter} bằng 0.",
 
-    t5Title: "Tính số lượng lọc (BFU · FFU)",
+    t5Title: "Tính số lượng lọc (BFU · FFU · HFB)",
     t5Formula: "Lưu lượng cần thiết (CMH) = Thể tích phòng (m³) × Số lần thay đổi khí (lần/giờ) &nbsp;→&nbsp; Số lượng lọc = Lưu lượng cần thiết ÷ Lưu lượng mỗi bộ lọc",
     refPanelTitle: "Tham khảo: Số lần thay đổi khí theo CLASS",
     refColH1: "Thông gió phòng sạch (theo CLASS)", refColH2: "Thông gió điều hòa (theo sai lệch nhiệt độ)",
@@ -1698,6 +1717,7 @@ const I18N = {
     refNote: "Với Class 1-100, cần xem xét riêng theo tốc độ mặt lọc 0.25-0.45 m/s. Các số liệu trên chỉ mang tính tham khảo — vui lòng nhập giá trị thực tế của dự án vào ô bên dưới.",
     volMethodLabel: "Cách nhập thể tích phòng",
     volMethod1: "Chiều rộng·dài + Chiều cao trần", volMethod2: "Diện tích (m²) + Chiều cao trần", volMethod3: "Nhập trực tiếp thể tích (m³)",
+    volLivePrefix: "Thể tích", volLiveEmpty: "Nhập chiều rộng, dài và chiều cao trần để tự động tính thể tích.", volLiveEmptyAH: "Nhập diện tích và chiều cao trần để tự động tính thể tích.",
     fgTitleWH: "Chiều rộng · Chiều dài · Chiều cao trần", labelWidthM: "Chiều rộng (m)", labelLengthM: "Chiều dài (m)", labelCeilingM: "Chiều cao trần (m)",
     fgTitleAH: "Diện tích · Chiều cao trần", labelAreaM2: "Diện tích (m²)",
     fgTitleV: "Nhập trực tiếp thể tích", labelVolumeM3: "Thể tích (m³)",
@@ -2334,6 +2354,36 @@ function getRoomVolume(){
 function updateAchPreview(){
   const el = document.getElementById('achPreview');
   const volume = getRoomVolume();
+
+  const volPreviewWH = document.getElementById('volPreviewWH');
+  if(volPreviewWH){
+    const w = parseFloat(document.getElementById('rmWidth').value);
+    const l = parseFloat(document.getElementById('rmLength').value);
+    const h = parseFloat(document.getElementById('rmHeightWH').value);
+    if(!isNaN(w) && !isNaN(l) && !isNaN(h) && w > 0 && l > 0 && h > 0){
+      const v = w * l * h;
+      volPreviewWH.classList.remove('empty');
+      volPreviewWH.innerHTML = `${t('volLivePrefix')} = ${w} × ${l} × ${h} = <strong>${v.toLocaleString('en-US', {maximumFractionDigits: 2})} m³</strong>`;
+    } else {
+      volPreviewWH.classList.add('empty');
+      volPreviewWH.textContent = t('volLiveEmpty');
+    }
+  }
+
+  const volPreviewAH = document.getElementById('volPreviewAH');
+  if(volPreviewAH){
+    const a = parseFloat(document.getElementById('rmArea').value);
+    const h = parseFloat(document.getElementById('rmHeightAH').value);
+    if(!isNaN(a) && !isNaN(h) && a > 0 && h > 0){
+      const v = a * h;
+      volPreviewAH.classList.remove('empty');
+      volPreviewAH.innerHTML = `${t('volLivePrefix')} = ${a} × ${h} = <strong>${v.toLocaleString('en-US', {maximumFractionDigits: 2})} m³</strong>`;
+    } else {
+      volPreviewAH.classList.add('empty');
+      volPreviewAH.textContent = t('volLiveEmptyAH');
+    }
+  }
+
   const ach = parseFloat(document.getElementById('ach').value);
   if(volume === null || volume <= 0 || isNaN(ach) || ach <= 0){
     el.classList.add('empty');
